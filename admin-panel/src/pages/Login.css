@@ -1,0 +1,159 @@
+/* ==========================================================================
+   RENO DESIGN Studio CRM - Luxury Login Screen
+   ========================================================================== */
+
+.crm-login-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #FAF9F6;
+  padding: 1.5rem;
+  background-image: radial-gradient(rgba(10, 10, 12, 0.05) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.crm-login-card {
+  width: 100%;
+  max-width: 440px;
+  background-color: #FFFFFF;
+  border: 1px solid rgba(10, 10, 12, 0.08);
+  border-radius: 1.5rem;
+  padding: 2.5rem 2.25rem;
+  box-shadow: 0 20px 40px -15px rgba(10, 10, 12, 0.07);
+}
+
+.crm-login-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 2rem;
+}
+
+.crm-login-hand {
+  height: 26px;
+  width: auto;
+}
+
+.crm-login-text {
+  height: 14px;
+  width: auto;
+}
+
+.crm-login-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  background-color: #0A0A0C;
+  color: #FAF9F6;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.crm-login-header h2 {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #0A0A0C;
+  letter-spacing: -0.02em;
+}
+
+.crm-login-header p {
+  font-size: 0.8125rem;
+  color: #6B6861;
+  margin-top: 0.35rem;
+  margin-bottom: 1.75rem;
+}
+
+.crm-login-error {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background-color: #FEF2F2;
+  border: 1px solid #FCA5A5;
+  color: #991B1B;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.crm-login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.crm-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.crm-input-group label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #525049;
+}
+
+.crm-input-group input {
+  all: unset;
+  box-sizing: border-box;
+  padding: 0.85rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(10, 10, 12, 0.12);
+  background-color: #FAF9F6;
+  font-size: 0.9375rem;
+  color: #0A0A0C;
+  transition: all 0.2s ease;
+}
+
+.crm-input-group input:focus {
+  background-color: #FFFFFF;
+  border-color: #0A0A0C;
+  box-shadow: 0 0 0 3px rgba(10, 10, 12, 0.08);
+}
+
+.crm-login-submit-btn {
+  all: unset;
+  box-sizing: border-box;
+  background-color: #0A0A0C;
+  color: #FAF9F6;
+  text-align: center;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  padding: 0.95rem;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(10, 10, 12, 0.2);
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
+}
+
+.crm-login-submit-btn:hover:not(:disabled) {
+  background-color: #222226;
+  transform: translateY(-1px);
+}
+
+.crm-login-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.crm-login-footer {
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(10, 10, 12, 0.06);
+  text-align: center;
+}
+
+.crm-security-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.7rem;
+  color: #8E8A80;
+  font-weight: 600;
+}

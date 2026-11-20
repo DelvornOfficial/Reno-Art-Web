@@ -1,0 +1,271 @@
+/* ==========================================================================
+   Profile Modal - Milk White & Chrome Black Luxury
+   ========================================================================== */
+
+.reno-profile-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background-color: rgba(10, 10, 12, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: profileFadeIn 0.22s ease-out;
+}
+
+@keyframes profileFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.reno-profile-card {
+  position: relative;
+  inline-size: 100%;
+  max-inline-size: 440px;
+  background-color: #FAF9F6;
+  border: 1px solid rgba(10, 10, 12, 0.1);
+  border-radius: 1.25rem;
+  box-shadow: 0 24px 60px -12px rgba(10, 10, 12, 0.28);
+  padding: 1.75rem 1.5rem 1.25rem;
+  box-sizing: border-box;
+  animation: profileCardPop 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes profileCardPop {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.reno-profile-close {
+  all: unset;
+  position: absolute;
+  top: 1.125rem;
+  right: 1.125rem;
+  inline-size: 32px;
+  block-size: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #0A0A0C;
+  background-color: rgba(10, 10, 12, 0.05);
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.reno-profile-close:hover {
+  background-color: #0A0A0C;
+  color: #FAF9F6;
+}
+
+.reno-profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-block-end: 1.25rem;
+  padding-block-end: 1.25rem;
+  border-bottom: 1px solid rgba(10, 10, 12, 0.08);
+}
+
+  .reno-profile-avatar-initials {
+    inline-size: 52px;
+    block-size: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1A1A1E 0%, #0A0A0C 100%);
+    color: #FAF9F6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 14px rgba(10, 10, 12, 0.2);
+    font-size: 1.125rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    border: 1px solid rgba(250, 249, 246, 0.2);
+  }
+
+  .reno-profile-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-inline-size: 0;
+  }
+
+  .reno-profile-handle {
+    font-size: 0.71875rem;
+    font-weight: 600;
+    color: #0A0A0C;
+  }
+
+  .reno-profile-name {
+    margin: 0;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: #0A0A0C;
+    text-transform: capitalize;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .reno-profile-email {
+    font-size: 0.78125rem;
+    color: #8E8A80;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .reno-profile-badge {
+    display: inline-block;
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #15803D;
+    background-color: rgba(21, 128, 61, 0.1);
+    padding: 0.15rem 0.5rem;
+    border-radius: 9999px;
+    margin-block-start: 0.25rem;
+    align-self: flex-start;
+  }
+
+  /* Tabs */
+  .reno-profile-tabs {
+    display: flex;
+    gap: 0.5rem;
+    background-color: rgba(10, 10, 12, 0.04);
+    padding: 0.25rem;
+    border-radius: 9999px;
+    margin-block-end: 1.25rem;
+  }
+
+  .reno-profile-tab {
+    all: unset;
+    flex: 1;
+    text-align: center;
+    padding-block: 0.45rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #8E8A80;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+
+  .reno-profile-tab.active {
+    background-color: #FFFFFF;
+    color: #0A0A0C;
+    box-shadow: 0 2px 6px rgba(10, 10, 12, 0.06);
+  }
+
+  .reno-profile-body {
+    min-block-size: 140px;
+  }
+
+  .reno-profile-empty-orders {
+    text-align: center;
+    padding: 1rem 0.5rem;
+  }
+
+  .reno-profile-empty-icon {
+    inline-size: 54px;
+    block-size: 54px;
+    margin: 0 auto 0.75rem;
+    background-color: #FFFFFF;
+    border: 1px solid rgba(10, 10, 12, 0.08);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #8E8A80;
+  }
+
+  .reno-profile-empty-orders h4 {
+    margin: 0 0 0.35rem 0;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #0A0A0C;
+  }
+
+  .reno-profile-empty-orders p {
+    margin: 0;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    color: #8E8A80;
+  }
+
+  .reno-profile-info-list {
+    background-color: #FFFFFF;
+    border: 1px solid rgba(10, 10, 12, 0.08);
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+
+  .reno-profile-info-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.65rem 1rem;
+    border-bottom: 1px solid rgba(10, 10, 12, 0.06);
+    font-size: 0.78125rem;
+  }
+
+  .reno-profile-info-row:last-child {
+    border-bottom: none;
+  }
+
+  .reno-info-label {
+    color: #8E8A80;
+    font-weight: 500;
+  }
+
+  .reno-info-val {
+    color: #0A0A0C;
+    font-weight: 600;
+  }
+
+  /* Footer */
+  .reno-profile-footer {
+    margin-block-start: 1.25rem;
+    padding-block-start: 1rem;
+    border-top: 1px solid rgba(10, 10, 12, 0.08);
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .reno-profile-logout-btn {
+    all: unset;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    background-color: rgba(220, 38, 38, 0.08);
+    color: #DC2626;
+    font-size: 0.78125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+
+  .reno-profile-logout-btn:hover {
+    background-color: #DC2626;
+    color: #FFFFFF;
+  }

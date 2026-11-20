@@ -1,0 +1,247 @@
+/* ==========================================================================
+   Footer - Modern Minimalist Mobile & Desktop Architecture Luxury UI
+   ========================================================================== */
+
+.reno-footer {
+  inline-size: 100%;
+  background-color: #FAF9F6;
+  border-top: 1px solid rgba(10, 10, 12, 0.08);
+  margin-block-start: auto;
+  box-sizing: border-box;
+}
+
+.reno-footer-inner {
+  max-inline-size: 1320px;
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+  padding-block: 3.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+
+  /* Brand Section */
+  .reno-footer-brand-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    max-inline-size: 420px;
+  }
+
+  .reno-footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .reno-footer-logo-hand {
+    block-size: 24px;
+    inline-size: auto;
+    display: block;
+  }
+
+  .reno-footer-logo-text {
+    block-size: 12px;
+    inline-size: auto;
+    display: block;
+  }
+
+  .reno-footer-tagline {
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.55;
+    color: #6B6861;
+  }
+
+    .reno-footer-contact-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-block-start: 0.25rem;
+    }
+
+    .reno-footer-pill-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.45rem 0.85rem;
+      background-color: #FFFFFF;
+      border: 1px solid rgba(10, 10, 12, 0.08);
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #0A0A0C;
+      text-decoration: none;
+      box-shadow: 0 1px 4px rgba(10, 10, 12, 0.02);
+      transition: all 0.18s ease;
+    }
+
+    .reno-footer-pill-link:hover {
+      background-color: #0A0A0C;
+      color: #FAF9F6;
+      border-color: #0A0A0C;
+      transform: translateY(-1px);
+    }
+
+
+      /* Accordion Group / Desktop Column Grid */
+      .reno-footer-accordion-group {
+        display: flex;
+        gap: 3.5rem;
+        flex-wrap: wrap;
+      }
+
+        .reno-footer-accordion-item {
+          flex: 1;
+          min-inline-size: 150px;
+          display: flex;
+          flex-direction: column;
+          gap: 0.875rem;
+        }
+
+
+          .reno-footer-accordion-btn {
+            all: unset;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            inline-size: 100%;
+            cursor: default;
+          }
+
+          .reno-footer-sec-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #0A0A0C;
+          }
+
+            .reno-footer-chevron {
+              display: none;
+              /* Hidden on desktop */
+            }
+
+            .reno-footer-accordion-content {
+              display: block;
+            }
+
+            .reno-footer-nav-list {
+              list-style: none;
+              margin: 0;
+              padding: 0;
+              display: flex;
+              flex-direction: column;
+              gap: 0.625rem;
+            }
+
+              .reno-footer-nav-link {
+                font-size: 0.8125rem;
+                color: #6B6861;
+                text-decoration: none;
+                transition: color 0.18s ease;
+              }
+
+                .reno-footer-nav-link:hover {
+                  color: #0A0A0C;
+                }
+
+                /* Bottom Bar */
+                  .reno-footer-bottom-bar {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding-block-start: 1.5rem;
+                    border-top: 1px solid rgba(10, 10, 12, 0.08);
+                    flex-wrap: wrap;
+                    gap: 1rem;
+                  }
+
+                    .reno-footer-badge {
+                      display: inline-flex;
+                      align-items: center;
+                      gap: 0.4rem;
+                      font-size: 0.6875rem;
+                      font-weight: 600;
+                      color: #0A0A0C;
+                      background-color: #FFFFFF;
+                      border: 1px solid rgba(10, 10, 12, 0.08);
+                      padding: 0.3rem 0.65rem;
+                      border-radius: 9999px;
+                    }
+
+                      .reno-footer-copyright {
+                        margin: 0;
+                        font-size: 0.75rem;
+                        color: #8E8A80;
+                      }
+
+                      /* Mobile Screens Styling */
+                      @media (max-width: 640px) {
+                        .reno-footer-inner {
+                          padding-inline: 1rem;
+                          padding-block: 2rem 1.75rem;
+                          gap: 1.5rem;
+                        }
+
+                          .reno-footer-brand-section {
+                            max-inline-size: 100%;
+                          }
+
+                          .reno-footer-accordion-group {
+                            flex-direction: column;
+                            gap: 0;
+                            border-top: 1px solid rgba(10, 10, 12, 0.08);
+                          }
+
+                            .reno-footer-accordion-item {
+                              border-bottom: 1px solid rgba(10, 10, 12, 0.08);
+                              gap: 0;
+                            }
+
+
+                              .reno-footer-accordion-btn {
+                                padding-block: 0.875rem;
+                                cursor: pointer;
+                              }
+
+                                .reno-footer-chevron {
+                                  display: block;
+                                  color: #6B6861;
+                                  transition: transform 0.22s ease;
+                                }
+
+                                .reno-footer-accordion-item.open .reno-footer-chevron {
+                                  transform: rotate(180deg);
+                                  color: #0A0A0C;
+                                }
+
+                                .reno-footer-accordion-content {
+                                  display: none;
+                                  padding-block-end: 1rem;
+                                  animation: accSlide 0.2s ease;
+                                }
+
+                                .reno-footer-accordion-item.open .reno-footer-accordion-content {
+                                  display: block;
+                                }
+
+                                @keyframes accSlide {
+                                  from {
+                                    opacity: 0;
+                                    transform: translateY(-4px);
+                                  }
+
+                                  to {
+                                    opacity: 1;
+                                    transform: translateY(0);
+                                  }
+                                }
+
+                                .reno-footer-bottom-bar {
+                                  flex-direction: column;
+                                  align-items: flex-start;
+                                  gap: 0.75rem;
+                                }
+                              }

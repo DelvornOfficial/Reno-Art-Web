@@ -1,0 +1,90 @@
+.crm-products-content {
+  display: flex;
+  flex-direction: column;
+}
+
+  .crm-products-header-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #FFFFFF;
+    border: 1px solid var(--border-light);
+    border-radius: 1rem;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.75rem;
+    box-shadow: 0 4px 20px -5px rgba(10, 10, 12, 0.03);
+  }
+
+
+    .crm-products-header-banner h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 0.2rem;
+    }
+
+      .crm-products-header-banner p {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+      }
+
+        .crm-btn-add-product {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          background: var(--primary-dark);
+          color: #FFFFFF;
+          border: none;
+          padding: 0.65rem 1.25rem;
+          border-radius: 9999px;
+          font-size: 0.875rem;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          box-shadow: 0 4px 12px rgba(10, 10, 12, 0.15);
+        }
+
+          .crm-btn-add-product:hover {
+            background: #25252a;
+            transform: translateY(-1px);
+          }
+
+          .crm-products-panel {
+            background: #FFFFFF;
+            border: 1px solid var(--border-light);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px -5px rgba(10, 10, 12, 0.03);
+          }
+
+          .crm-prod-btn-edit {
+            background: #EFF6FF;
+            color: #2563eb;
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            padding: 0.4rem 0.85rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.15s ease;
+          }
+
+          .crm-prod-btn-edit:hover {
+            background: #DBEAFE;
+          }
+
+          .crm-prod-btn-delete {
+            background: #FEE2E2;
+            color: #EF4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 0.4rem 0.85rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.15s ease;
+          }
+
+          .crm-prod-btn-delete:hover {
+            background: #FCA5A5;
+          }

@@ -1,0 +1,129 @@
+.crm-dashboard-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.crm-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-radius: 1rem;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.75rem;
+  box-shadow: 0 4px 20px -5px rgba(10, 10, 12, 0.03);
+}
+
+.crm-banner h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 0.2rem;
+}
+
+.crm-banner p {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.crm-button-sync {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #FFFFFF;
+  color: var(--text-main);
+  border: 1px solid var(--border-accent);
+}
+
+.crm-button-sync:hover {
+  background: rgba(10, 10, 12, 0.03);
+}
+
+.crm-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.crm-stat-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-radius: 1rem;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 4px 20px -5px rgba(10, 10, 12, 0.03);
+}
+
+.crm-stat-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.crm-stat-value {
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin-top: 0.4rem;
+  letter-spacing: -0.02em;
+  color: var(--text-main);
+}
+
+.crm-dashboard-panel {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px -5px rgba(10, 10, 12, 0.03);
+}
+
+.crm-dashboard-panel h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0A0A0C;
+  margin-bottom: 1.25rem;
+}
+
+.crm-table-container {
+  overflow-x: auto;
+}
+
+.crm-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.crm-table th {
+  padding: 0.75rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-light);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.crm-table td {
+  padding: 0.9rem 1rem;
+  font-size: 0.85rem;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-main);
+}
+
+.crm-table tr:hover td {
+  background: rgba(10, 10, 12, 0.015);
+}
+
+.crm-table tr:last-child td {
+  border-bottom: none;
+}

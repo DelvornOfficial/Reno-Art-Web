@@ -1,0 +1,84 @@
+.crm-detail-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.crm-detail-btn-back {
+  background: #FFFFFF;
+  color: var(--text-main);
+  border: 1px solid var(--border-accent);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.crm-detail-btn-back:hover {
+  background: rgba(10, 10, 12, 0.04);
+}
+
+.crm-detail-user-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 20px -5px rgba(10, 10, 12, 0.03);
+}
+
+.crm-detail-avatar-img {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #2563eb;
+}
+
+.crm-detail-avatar-ph {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #0A0A0C;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.75rem;
+}
+
+.crm-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.crm-detail-panels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.crm-detail-panel {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px -5px rgba(10, 10, 12, 0.03);
+}
+
+.crm-detail-panel h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 1rem;
+}

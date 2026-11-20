@@ -1,0 +1,186 @@
+/* ==========================================================================
+   Side Floating Currency Switcher - Milk White & Chrome Black Luxury
+   ========================================================================== */
+
+.reno-currency-dock {
+  position: fixed;
+  right: 0;
+  top: 48%;
+  transform: translateY(-50%);
+  z-index: 9999;
+  font-family: inherit;
+}
+
+/* Floating Edge Tab Button */
+.reno-currency-tab-btn {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  background-color: #0A0A0C;
+  color: #FAF9F6;
+  padding-block: 0.75rem;
+  padding-inline: 0.65rem 0.5rem;
+  border-top-left-radius: 0.5rem;
+  border-bottom-left-radius: 0.5rem;
+  box-shadow: -4px 6px 20px rgba(10, 10, 12, 0.25);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(250, 249, 246, 0.15);
+  border-right: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.reno-currency-tab-btn:hover {
+  background-color: #222226;
+  transform: translateX(-3px);
+  box-shadow: -6px 8px 24px rgba(10, 10, 12, 0.35);
+}
+
+.reno-currency-tab-btn.active {
+  background-color: #000000;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.reno-tab-code {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+
+.reno-tab-chevron {
+  transition: transform 0.2s ease;
+}
+
+/* Currency Flyout Panel */
+.reno-currency-popup {
+  position: absolute;
+  right: calc(100% + 0.5rem);
+  top: 50%;
+  transform: translateY(-50%);
+  inline-size: 270px;
+  background-color: #0A0A0C;
+  color: #FAF9F6;
+  border: 1px solid rgba(250, 249, 246, 0.12);
+  border-radius: 0.85rem;
+  box-shadow: 0 16px 48px -8px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  animation: currencySlideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes currencySlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
+.reno-currency-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 1rem;
+  background-color: #141418;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #D6D3CD;
+}
+
+.reno-currency-close-btn {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 20px;
+  block-size: 20px;
+  border-radius: 50%;
+  color: #8E8A80;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.reno-currency-close-btn:hover {
+  color: #FAF9F6;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.reno-currency-options-list {
+  display: flex;
+  flex-direction: column;
+  padding: 0.35rem;
+  gap: 0.2rem;
+}
+
+.reno-currency-option {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: 0.75rem;
+}
+
+.reno-currency-option:hover {
+  background-color: #1F1F24;
+}
+
+.reno-currency-option.selected {
+  background-color: #FFFFFF;
+  color: #0A0A0C;
+}
+
+.reno-curr-code {
+  font-weight: 800;
+  min-inline-size: 38px;
+  letter-spacing: 0.05em;
+}
+
+.reno-curr-name {
+  flex: 1;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  opacity: 0.85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-inline: 0.4rem;
+}
+
+.reno-curr-sym {
+  font-weight: 700;
+  font-size: 0.8125rem;
+}
+
+/* Mobile Screens */
+@media (max-width: 640px) {
+  .reno-currency-dock {
+    top: 55%;
+  }
+
+  .reno-currency-tab-btn {
+    padding-block: 0.6rem;
+    padding-inline: 0.5rem 0.35rem;
+  }
+
+  .reno-tab-code {
+    font-size: 0.625rem;
+  }
+
+  .reno-currency-popup {
+    inline-size: 240px;
+    right: calc(100% + 0.35rem);
+  }
+}

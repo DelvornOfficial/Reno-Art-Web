@@ -1,0 +1,58 @@
+.crm-customers-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.crm-customers-panel {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px -5px rgba(10, 10, 12, 0.03);
+}
+
+.crm-customers-row {
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.crm-customers-row:hover td {
+  background: rgba(10, 10, 12, 0.02);
+}
+
+.crm-customer-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--border-light);
+}
+
+.crm-customer-avatar-fallback {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #0A0A0C;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.crm-cust-btn-view {
+  background: #EFF6FF;
+  color: #2563eb;
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  padding: 0.4rem 0.85rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+
+.crm-cust-btn-view:hover {
+  background: #DBEAFE;
+}

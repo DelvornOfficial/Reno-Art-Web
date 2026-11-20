@@ -1,0 +1,555 @@
+/* ==========================================================================
+   Mobile Header - Professional Modern Minimalist (RENO DESIGN)
+   ========================================================================== */
+
+.reno-mobile-header {
+  inline-size: 100%;
+  font-family: inherit;
+  background-color: #FAF9F6;
+}
+
+/* Sticky Navigation Bar */
+.reno-mobile-bar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: 0.85rem;
+  padding-block: 0.5rem;
+  min-height: 56px;
+  background-color: #FAF9F6;
+  border-bottom: 1px solid rgba(10, 10, 12, 0.08);
+  box-shadow: 0 2px 12px rgba(10, 10, 12, 0.03);
+}
+
+/* Brand on Left */
+.reno-mobile-brand {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0.45rem;
+  text-decoration: none;
+  color: #0A0A0C !important;
+  flex-shrink: 1;
+  min-inline-size: 0;
+  cursor: pointer;
+}
+
+.reno-mobile-brand:active {
+  opacity: 0.75;
+}
+
+.reno-mobile-logo-hand {
+  height: 24px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  flex-shrink: 0;
+}
+
+.reno-mobile-logo-text {
+  height: 12px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  flex-shrink: 0;
+}
+
+/* Actions Group on Right */
+.reno-mobile-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+/* Clean Reset for Action Buttons */
+.reno-mobile-bar button,
+.reno-mobile-bar a.reno-mobile-icon-btn,
+.reno-mobile-icon-btn,
+.reno-mobile-menu-trigger {
+  all: unset;
+  box-sizing: border-box;
+  inline-size: 34px;
+  block-size: 34px;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  color: #0A0A0C !important;
+  cursor: pointer;
+  text-decoration: none !important;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+/* Persistent Mobile Login Pill Button - Attention Catching */
+.reno-mobile-bar .reno-mobile-login-pill-btn,
+.reno-mobile-login-pill-btn {
+  all: unset !important;
+  box-sizing: border-box !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  inline-size: auto !important;
+  block-size: auto !important;
+  min-inline-size: max-content !important;
+  white-space: nowrap !important;
+  padding-block: 0.35rem !important;
+  padding-inline: 0.8rem !important;
+  border-radius: 9999px !important;
+  background-color: #0A0A0C !important;
+  color: #FAF9F6 !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.03em !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+  margin-inline-end: 0.15rem !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 2px 10px rgba(10, 10, 12, 0.2) !important;
+  animation: mobileLoginAttention 3s infinite ease-in-out !important;
+}
+
+
+@keyframes mobileLoginAttention {
+
+  0%,
+  100% {
+    box-shadow: 0 2px 10px rgba(10, 10, 12, 0.2);
+    transform: scale(1);
+  }
+
+  50% {
+    box-shadow: 0 0 0 3px rgba(10, 10, 12, 0.15), 0 4px 14px rgba(10, 10, 12, 0.3);
+    transform: scale(1.04);
+  }
+}
+
+.reno-mobile-login-pill-btn:hover {
+  background-color: #222226 !important;
+}
+
+.reno-mobile-login-pill-btn:active {
+  transform: scale(0.94);
+}
+
+.reno-mobile-icon-btn svg {
+  display: block;
+  color: #0A0A0C !important;
+  stroke: #0A0A0C !important;
+}
+
+
+/* Mobile Telegram-style Profile Avatar Button at the Edge */
+.reno-mobile-bar .reno-mobile-profile-avatar-btn,
+.reno-mobile-profile-avatar-btn {
+  all: unset !important;
+  box-sizing: border-box !important;
+  inline-size: 34px !important;
+  block-size: 34px !important;
+  min-inline-size: 34px !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, #1A1A1E 0%, #0A0A0C 100%) !important;
+  color: #FAF9F6 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 1px solid rgba(10, 10, 12, 0.25) !important;
+  box-shadow: 0 2px 6px rgba(10, 10, 12, 0.15) !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  -webkit-tap-highlight-color: transparent !important;
+  user-select: none !important;
+  margin-left: 0.1rem !important;
+}
+
+
+.reno-mobile-profile-avatar-btn:hover {
+  background: #222226 !important;
+  transform: scale(1.04) !important;
+}
+
+
+.reno-mobile-profile-avatar-btn:active {
+  transform: scale(0.94) !important;
+}
+
+.reno-mobile-initials {
+  font-size: 0.71875rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.04em !important;
+  line-height: 1 !important;
+  color: #FAF9F6 !important;
+}
+
+.reno-mobile-icon-btn:hover,
+.reno-mobile-menu-trigger:hover {
+  background-color: rgba(10, 10, 12, 0.06) !important;
+}
+
+.reno-mobile-icon-btn:active,
+.reno-mobile-menu-trigger:active {
+  transform: scale(0.92);
+  background-color: rgba(10, 10, 12, 0.12) !important;
+}
+
+.reno-mobile-icon-btn.active {
+  background-color: #0A0A0C !important;
+  color: #FFFFFF !important;
+}
+
+.reno-mobile-icon-btn.active svg {
+  color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
+}
+
+/* Mobile Cart Icon with Badge */
+.reno-mobile-cart-btn {
+  position: relative !important;
+}
+
+.reno-mobile-cart-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  inline-size: 16px;
+  block-size: 16px;
+  border-radius: 50%;
+  background-color: #0A0A0C;
+  color: #FAF9F6;
+  font-size: 0.5625rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 2px #FAF9F6;
+  animation: badgePop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes badgePop {
+  from {
+    transform: scale(0.6);
+  }
+
+  to {
+    transform: scale(1);
+  }
+}
+
+/* Architectural 2-bar Menu Trigger */
+.reno-mobile-menu-trigger {
+  flex-direction: column !important;
+  gap: 5px !important;
+}
+
+.reno-menu-bar {
+  display: block;
+  height: 1.8px;
+  background-color: #0A0A0C;
+  border-radius: 2px;
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+.reno-menu-bar-top {
+  width: 18px;
+}
+
+.reno-menu-bar-bot {
+  width: 12px;
+  align-self: flex-end;
+  margin-right: 2px;
+}
+
+.reno-mobile-menu-trigger:hover .reno-menu-bar-bot {
+  width: 18px;
+  margin-right: 0;
+}
+
+/* Expandable Search Tray */
+.reno-mobile-search-tray {
+  padding-inline: 1.25rem;
+  padding-block-end: 0.75rem;
+  background-color: #FAF9F6;
+  animation: trayFade 0.2s ease-out;
+}
+
+@keyframes trayFade {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reno-search-tray-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.reno-search-tray-icon {
+  position: absolute;
+  inset-inline-start: 0.875rem;
+  color: #6B6861;
+  pointer-events: none;
+}
+
+.reno-mobile-search-input {
+  all: unset;
+  box-sizing: border-box;
+  inline-size: 100%;
+  padding-block: 0.55rem;
+  padding-inline-start: 2.35rem;
+  padding-inline-end: 1rem;
+  background-color: #FFFFFF;
+  border: 1px solid rgba(10, 10, 12, 0.12);
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  color: #0A0A0C;
+  box-shadow: 0 2px 8px rgba(10, 10, 12, 0.03);
+  transition: all 0.2s ease;
+}
+
+.reno-mobile-search-input:focus {
+  border-color: #0A0A0C;
+  box-shadow: 0 0 0 2px rgba(10, 10, 12, 0.08);
+}
+
+/* Mobile-Only One-Line Tagline Strip (Infinite Horizontal Marquee at 0.25x speed) */
+.reno-mobile-tagline-container {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+  inline-size: 100%;
+  padding-block: 0.5rem;
+  background-color: #FAF9F6;
+  border-bottom: 1px solid rgba(10, 10, 12, 0.06);
+  user-select: none;
+  contain: paint;
+}
+
+.reno-mobile-tagline-track {
+  display: flex;
+  align-items: center;
+  inline-size: max-content;
+  will-change: transform;
+  animation: marqueeScroll 14s linear infinite;
+}
+
+.reno-mobile-tagline-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes marqueeScroll {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.reno-mobile-tagline-text {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: #0A0A0C;
+  letter-spacing: 0.02em;
+  margin: 0;
+  padding-inline: 1.5rem;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+}
+
+.reno-tagline-sep {
+  margin-inline: 0.5rem;
+  color: #6B6861;
+  opacity: 0.5;
+  font-weight: 300;
+}
+
+/* Slide-out Navigation Drawer */
+.reno-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(10, 10, 12, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1100;
+  animation: fadeIn 0.22s ease-out forwards;
+}
+
+.reno-drawer-backdrop.closing {
+  animation: fadeOut 0.22s ease-in forwards;
+}
+
+.reno-mobile-drawer {
+  position: fixed;
+  top: 0;
+  inset-inline-start: 0;
+  block-size: 100dvh;
+  inline-size: min(84dvw, 21rem);
+  background-color: #FAF9F6;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 8px 0 32px rgba(10, 10, 12, 0.16);
+  animation: slideDrawer 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.reno-mobile-drawer.closing {
+  animation: slideDrawerOut 0.22s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+@keyframes slideDrawer {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideDrawerOut {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+.reno-drawer-header {
+  padding: 1.125rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(10, 10, 12, 0.08);
+  background-color: #FFFFFF;
+}
+
+.reno-drawer-close {
+  all: unset;
+  box-sizing: border-box;
+  inline-size: 34px;
+  block-size: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(10, 10, 12, 0.1);
+  background: #FAF9F6;
+  color: #0A0A0C;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.reno-drawer-close:hover {
+  background-color: #0A0A0C;
+  color: #FFFFFF;
+}
+
+.reno-drawer-menu {
+  list-style: none;
+  padding: 1.25rem 0.875rem;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.reno-drawer-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  inline-size: 100%;
+  box-sizing: border-box;
+  padding: 0.8125rem 1rem;
+  color: #0A0A0C;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  transition: all 0.18s ease;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.reno-drawer-link:hover,
+.reno-drawer-link.active {
+  background-color: #0A0A0C;
+  color: #FFFFFF;
+}
+
+.reno-drawer-link:hover svg,
+.reno-drawer-link.active svg {
+  stroke: #FFFFFF;
+}
+
+.reno-drawer-footer {
+  padding: 1.25rem;
+  border-top: 1px solid rgba(10, 10, 12, 0.08);
+  background-color: #FFFFFF;
+}
+
+.reno-drawer-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 100%;
+  padding-block: 0.875rem;
+  background: #0A0A0C;
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 9999px;
+  text-decoration: none;
+  box-shadow: 0 4px 16px rgba(10, 10, 12, 0.2);
+  transition: all 0.2s ease;
+}
+
+.reno-drawer-cta:hover {
+  background: #1F1F24;
+  transform: translateY(-1px);
+}

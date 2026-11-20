@@ -1,0 +1,90 @@
+.crm-categories-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.crm-categories-layout {
+  display: grid;
+  grid-template-columns: minmax(300px, 420px) 1fr;
+  gap: 2rem;
+}
+
+.crm-categories-panel {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px -5px rgba(10, 10, 12, 0.03);
+}
+
+.crm-categories-panel h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 1.25rem;
+}
+
+.crm-cat-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+}
+
+.crm-cat-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.crm-cat-input {
+  width: 100%;
+  background: #FAF9F6;
+  border: 1px solid var(--border-accent);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  color: var(--text-main);
+  font-size: 0.9rem;
+  outline: none;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.crm-cat-input:focus {
+  border-color: var(--primary-dark);
+}
+
+.crm-cat-btn-create {
+  background: var(--primary-dark);
+  color: #FFFFFF;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.crm-cat-btn-create:hover {
+  background: #25252a;
+}
+
+.crm-cat-btn-delete {
+  background: #FEE2E2;
+  color: #EF4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+
+.crm-cat-btn-delete:hover {
+  background: #FCA5A5;
+  color: #7F1D1D;
+}

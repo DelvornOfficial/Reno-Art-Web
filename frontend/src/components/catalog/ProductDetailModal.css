@@ -1,0 +1,362 @@
+/* ==========================================================================
+   Product Detail QuickView Modal - Milk White & Chrome Black Luxury
+   ========================================================================== */
+
+.reno-detail-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2500;
+  background-color: rgba(10, 10, 12, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  box-sizing: border-box;
+  animation: detailFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes detailFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.reno-detail-card {
+  position: relative;
+  inline-size: 100%;
+  max-inline-size: 520px;
+  max-block-size: 90dvh;
+  overflow-y: auto;
+  background-color: #FAF9F6;
+  border: 1px solid rgba(10, 10, 12, 0.1);
+  border-radius: 1.25rem;
+  box-shadow: 0 24px 60px -12px rgba(10, 10, 12, 0.3);
+  animation: detailPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes detailPopIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Close Button */
+.reno-detail-close-btn {
+  all: unset;
+  box-sizing: border-box;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  inline-size: 32px;
+  block-size: 32px;
+  border-radius: 50%;
+  background-color: rgba(10, 10, 12, 0.55);
+  backdrop-filter: blur(8px);
+  color: #FAF9F6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.18s ease;
+}
+
+.reno-detail-close-btn:hover {
+  background-color: #0A0A0C;
+  transform: rotate(90deg);
+}
+
+/* 3D Visual Preview */
+.reno-detail-preview {
+  position: relative;
+  block-size: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-top-left-radius: 1.25rem;
+  border-top-right-radius: 1.25rem;
+}
+
+.reno-detail-badge-strip {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 5;
+}
+
+.reno-detail-badge {
+  background-color: #FAF9F6;
+  color: #0A0A0C;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.reno-detail-format-pill {
+  background-color: rgba(10, 10, 12, 0.65);
+  backdrop-filter: blur(8px);
+  color: #FAF9F6;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.35rem;
+}
+
+.reno-detail-wireframe-wrap {
+  inline-size: 150px;
+  block-size: 150px;
+  animation: floatWire 4s ease-in-out infinite;
+}
+
+@keyframes floatWire {
+
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-4px) rotate(2deg);
+  }
+}
+
+.reno-detail-wireframe-svg {
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.reno-detail-poly-pill {
+  position: absolute;
+  bottom: 0.85rem;
+  right: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.6875rem;
+  color: rgba(250, 249, 246, 0.85);
+  background-color: rgba(0, 0, 0, 0.45);
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.35rem;
+}
+
+/* Content Body */
+.reno-detail-body {
+  padding: 1.5rem 1.75rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  background-color: #FAF9F6;
+}
+
+.reno-detail-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.reno-detail-category {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #8E8A80;
+}
+
+.reno-detail-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #0A0A0C;
+}
+
+.reno-detail-dls {
+  color: #8E8A80;
+  font-weight: 500;
+  font-size: 0.75rem;
+}
+
+.reno-detail-title {
+  margin: 0;
+  font-family: var(--font-heading, inherit);
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #0A0A0C;
+  line-height: 1.25;
+}
+
+/* Price Box */
+.reno-detail-price-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1rem 1.25rem;
+  background-color: #FFFFFF;
+  border: 1px solid rgba(10, 10, 12, 0.08);
+  border-radius: 0.875rem;
+}
+
+.reno-detail-price-stack {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.reno-detail-curr {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0A0A0C;
+}
+
+.reno-detail-price {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #0A0A0C;
+  letter-spacing: -0.03em;
+}
+
+.reno-detail-orig-price {
+  font-size: 0.9375rem;
+  color: #A39F93;
+  text-decoration: line-through;
+  margin-inline-start: 0.35rem;
+}
+
+.reno-detail-discount-pill {
+  margin-inline-start: auto;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  background-color: #15803D;
+  color: #FFFFFF;
+  padding: 0.2rem 0.55rem;
+  border-radius: 9999px;
+  letter-spacing: 0.02em;
+}
+
+.reno-detail-license-tag {
+  font-size: 0.71875rem;
+  color: #6B6861;
+}
+
+/* Section */
+.reno-detail-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.reno-detail-sec-heading {
+  margin: 0;
+  font-size: 0.71875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #8E8A80;
+}
+
+.reno-detail-desc {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: #525049;
+}
+
+/* Specs Grid */
+.reno-detail-specs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.reno-spec-item {
+  padding: 0.75rem;
+  background-color: #FFFFFF;
+  border: 1px solid rgba(10, 10, 12, 0.06);
+  border-radius: 0.625rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.reno-spec-label {
+  font-size: 0.6875rem;
+  color: #8E8A80;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.reno-spec-value {
+  font-size: 0.8125rem;
+  color: #0A0A0C;
+  font-weight: 600;
+}
+
+/* CTA Bar */
+.reno-detail-cta-bar {
+  margin-block-start: 0.5rem;
+}
+
+.reno-detail-buy-btn {
+  all: unset;
+  box-sizing: border-box;
+  inline-size: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding-block: 0.85rem;
+  background-color: #0A0A0C;
+  color: #FAF9F6;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  border-radius: 9999px;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(10, 10, 12, 0.2);
+  transition: all 0.18s ease;
+}
+
+.reno-detail-buy-btn:hover {
+  background-color: #222226;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 480px) {
+  .reno-detail-preview {
+    block-size: 200px;
+  }
+
+  .reno-detail-body {
+    padding: 1.25rem 1.15rem 1.25rem;
+    gap: 1rem;
+  }
+
+  .reno-detail-specs-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+}

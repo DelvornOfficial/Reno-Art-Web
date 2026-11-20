@@ -1,0 +1,24 @@
+# Node & Frontend / Admin
+node_modules/
+frontend/node_modules/
+admin-panel/node_modules/
+dist/
+frontend/dist/
+admin-panel/dist/
+
+# Python & Backend
+__pycache__/
+*.pyc
+*.pyo
+venv/
+backend/venv/
+backend/__pycache__/
+backend/app/__pycache__/
+backend/app/*/__pycache__/
+backend/app/*/*/__pycache__/
+.env.local
+
+# Temp zip files
+*.zip
+deploy-package/
+temp_*.txt

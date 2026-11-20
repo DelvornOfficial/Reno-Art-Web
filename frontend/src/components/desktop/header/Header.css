@@ -1,0 +1,343 @@
+/* ==========================================================================
+   Desktop Header - Modern Minimalist Milk White + Chrome Black UI
+   ========================================================================== */
+
+:root {
+  --milk-white: #FAF9F6;
+  --milk-white-glass: rgba(250, 249, 246, 0.88);
+  --milk-white-surface: #F3F0E8;
+  --milk-white-card: #FFFFFF;
+  --chrome-black: #0A0A0C;
+  --chrome-surface: rgba(10, 10, 12, 0.04);
+  --chrome-surface-hover: rgba(10, 10, 12, 0.08);
+  --chrome-border: rgba(10, 10, 12, 0.06);
+  --chrome-border-active: rgba(10, 10, 12, 0.18);
+  --text-muted: #6B6861;
+}
+
+.reno-desktop-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: var(--milk-white-glass);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--chrome-border);
+  box-shadow: 0 4px 24px -2px rgba(10, 10, 12, 0.03);
+  font-family: inherit;
+  inline-size: 100%;
+}
+
+/* Nav Bar Container */
+.reno-nav-container {
+  max-inline-size: 1380px;
+  margin-inline: auto;
+  padding-inline: 2.25rem;
+  padding-block: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  min-height: 68px;
+}
+
+/* Brand Lockup: Hand + RENO DESIGN aligned side-by-side */
+.reno-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reno-brand:hover {
+  opacity: 0.82;
+}
+
+.reno-brand-hand {
+  height: 2.25rem;
+  /* ~36px */
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.reno-brand-text {
+  height: 1.125rem;
+  /* ~18px */
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+/* Navigation Links */
+.reno-nav {
+  display: flex;
+  align-items: center;
+}
+
+.reno-nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  list-style: none;
+  margin: 0;
+  padding: 0.25rem;
+  background: var(--chrome-surface);
+  border: 1px solid var(--chrome-border);
+  border-radius: 9999px;
+}
+
+.reno-nav-link {
+  display: inline-flex;
+  align-items: center;
+  padding-block: 0.45rem;
+  padding-inline: 1rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-decoration: none;
+  border-radius: 9999px;
+  letter-spacing: 0.02em;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reno-nav-link:hover {
+  color: var(--chrome-black);
+  background-color: var(--chrome-surface-hover);
+}
+
+.reno-nav-link.active {
+  background-color: var(--chrome-black);
+  color: #FFFFFF;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(10, 10, 12, 0.16);
+}
+
+/* Actions Group */
+.reno-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  flex-shrink: 0;
+}
+
+/* Minimalist Search Pill */
+.reno-search-wrapper {
+  position: relative;
+  inline-size: 210px;
+}
+
+.reno-search-icon {
+  position: absolute;
+  inset-inline-start: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.reno-search-field {
+  inline-size: 100%;
+  padding-block: 0.45rem;
+  padding-inline-start: 2.25rem;
+  padding-inline-end: 0.875rem;
+  background-color: #FFFFFF;
+  border: 1px solid var(--chrome-border);
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  color: var(--chrome-black);
+  box-shadow: 0 2px 6px rgba(10, 10, 12, 0.02);
+  transition: all 0.2s ease;
+}
+
+.reno-search-field:focus {
+  outline: none;
+  border-color: var(--chrome-black);
+  box-shadow: 0 0 0 2px rgba(10, 10, 12, 0.08);
+}
+
+/* Icon Button */
+.reno-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 2.25rem;
+  block-size: 2.25rem;
+  background-color: var(--chrome-surface);
+  border: 1px solid var(--chrome-border);
+  color: var(--chrome-black);
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reno-icon-btn:hover {
+  background-color: var(--chrome-surface-hover);
+  border-color: var(--chrome-border-active);
+  transform: scale(1.05);
+}
+
+/* Header Persistent Login Button - High Attention Catching */
+.reno-header-login-btn {
+  all: unset;
+  box-sizing: border-box;
+  padding-block: 0.45rem;
+  padding-inline: 1.15rem;
+  border-radius: 9999px;
+  border: 1px solid #0A0A0C;
+  background-color: #0A0A0C;
+  color: #FAF9F6;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  position: relative;
+  box-shadow: 0 4px 14px rgba(10, 10, 12, 0.22);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: loginPulseAttention 3s infinite ease-in-out;
+}
+
+
+@keyframes loginPulseAttention {
+
+  0%,
+  100% {
+    box-shadow: 0 4px 14px rgba(10, 10, 12, 0.22);
+    transform: scale(1);
+  }
+
+  50% {
+    box-shadow: 0 0 0 4px rgba(10, 10, 12, 0.12), 0 6px 20px rgba(10, 10, 12, 0.3);
+    transform: scale(1.03);
+  }
+}
+
+.reno-header-login-btn:hover {
+  background-color: #222226;
+  transform: translateY(-1px) scale(1.04);
+  box-shadow: 0 6px 22px rgba(10, 10, 12, 0.35);
+}
+
+/* Desktop Telegram-style Initial Avatar Circle */
+.reno-header-avatar-circle {
+  all: unset;
+  box-sizing: border-box;
+  inline-size: 2.25rem;
+  block-size: 2.25rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1A1A1E 0%, #0A0A0C 100%);
+  color: #FAF9F6;
+  border: 1px solid rgba(10, 10, 12, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(10, 10, 12, 0.14);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  position: relative;
+}
+
+.reno-header-verified-dot {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  inline-size: 10px;
+  block-size: 10px;
+  background-color: #0095F6;
+  border: 2px solid #FAF9F6;
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(0, 149, 246, 0.6);
+  animation: dotGlow 2.5s infinite ease-in-out;
+}
+
+@keyframes dotGlow {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 6px rgba(0, 149, 246, 0.6);
+  }
+  50% {
+    transform: scale(1.15);
+    box-shadow: 0 0 10px rgba(0, 149, 246, 0.9);
+  }
+}
+
+
+.reno-header-avatar-circle:hover {
+  background: #222226;
+  transform: scale(1.05);
+  box-shadow: 0 4px 14px rgba(10, 10, 12, 0.25);
+  border-color: #0A0A0C;
+}
+
+
+.reno-desktop-initials {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  line-height: 1;
+}
+
+/* Desktop Cart Pill */
+.reno-desktop-cart-btn {
+  all: unset;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.95rem;
+  background-color: #FFFFFF;
+  border: 1px solid var(--chrome-border-active);
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--chrome-black);
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(10, 10, 12, 0.03);
+  transition: all 0.2s ease;
+}
+
+.reno-desktop-cart-btn:hover {
+  background-color: var(--chrome-surface-hover);
+  border-color: var(--chrome-black);
+}
+
+.reno-cart-pill-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 18px;
+  block-size: 18px;
+  padding-inline: 4px;
+  background-color: var(--chrome-black);
+  color: var(--milk-white);
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+}
+
+/* CTA Pill Button */
+.reno-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  padding-block: 0.5rem;
+  padding-inline: 1.25rem;
+  background-color: var(--chrome-black);
+  color: #FFFFFF;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: 9999px;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(10, 10, 12, 0.18);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reno-cta-btn:hover {
+  background-color: #222226;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(10, 10, 12, 0.24);
+}

@@ -1,0 +1,19 @@
+.crm-orders-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.crm-orders-panel {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px -5px rgba(10, 10, 12, 0.03);
+}
+
+.crm-orders-panel h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 1.25rem;
+}

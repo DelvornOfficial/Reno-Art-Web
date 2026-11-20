@@ -1,0 +1,138 @@
+:root {
+  --bg-primary: #FAF9F6;
+  --bg-card: #FFFFFF;
+  --text-main: #0A0A0C;
+  --text-muted: #6B6861;
+  --border-light: rgba(10, 10, 12, 0.08);
+  --border-accent: rgba(10, 10, 12, 0.15);
+  --primary-dark: #0A0A0C;
+  --accent-blue: #0095F6;
+  --accent-green: #10B981;
+  --font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* CRM Root Layout */
+.crm-layout,
+.crm-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+}
+
+.crm-main {
+  flex: 1;
+  padding: 2rem 2.5rem;
+  overflow-y: auto;
+  max-width: calc(100vw - 260px);
+}
+
+/* Mobile Responsive Improvements */
+@media (max-width: 900px) {
+  .crm-container {
+    flex-direction: column;
+  }
+
+  .crm-main {
+    max-width: 100vw;
+    padding: 1.25rem 1rem;
+    overflow-x: hidden;
+  }
+
+  .crm-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .crm-user-profile {
+    align-self: flex-start;
+  }
+
+  .crm-title {
+    font-size: 1.35rem;
+  }
+}
+
+.crm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+
+.crm-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-main);
+}
+
+.crm-subtitle {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  margin-top: 0.2rem;
+}
+
+.crm-user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.crm-user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--primary-dark);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+/* Global Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+
+.badge-success {
+  background: #ECFDF5;
+  color: #065F46;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+
+.badge-warning {
+  background: #FFFBEB;
+  color: #92400E;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.badge-info {
+  background: #EFF6FF;
+  color: #1E40AF;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
