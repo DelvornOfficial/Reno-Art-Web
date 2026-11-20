@@ -531,10 +531,17 @@ return (
                       <strong className="reno-saved-pill-name">{formData.fullName}</strong>
                       <span className="reno-saved-pill-verified">Verified</span>
                     </div>
-                    <span className="reno-saved-pill-contact">{formData.email} &bull; {formData.phone}</span>
-                    {formData.address && (
-                      <span className="reno-saved-pill-addr">{formData.address}</span>
-                    )}
+                    <div className="reno-saved-pill-details">
+                      <span>{formData.email}</span>
+                      <span>&bull;</span>
+                      <span>{formData.phone}</span>
+                      {formData.address && (
+                        <>
+                          <span>&bull;</span>
+                          <span className="reno-saved-pill-addr">{formData.address}</span>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
 
