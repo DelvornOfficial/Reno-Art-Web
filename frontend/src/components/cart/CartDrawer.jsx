@@ -109,17 +109,25 @@ export function CartDrawer({
                               type="button"
                               className="reno-cart-buy-single-btn"
                               onClick={() => onSingleCheckout(item)}
-                              title="Buy this single item only"
+                              title="Checkout this design directly"
                             >
-                              Buy Only This
+                              <span>Buy Only This</span>
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12" />
+                                <polyline points="12 5 19 12 12 19" />
+                              </svg>
                             </button>
                             <button
                               type="button"
                               className="reno-cart-remove-btn"
                               onClick={() => onRemoveItem(idx)}
                               aria-label="Remove item"
+                              title="Remove item"
                             >
-                              Remove
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="3 6 5 6 21 6" />
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                              </svg>
                             </button>
                           </div>
                         </div>
