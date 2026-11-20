@@ -601,6 +601,87 @@
     margin-block-end: 1.5rem;
   }
 
+  /* Confirming Payment Futuristic Shield Animation */
+  .reno-confirming-anim-wrap {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .reno-confirming-ripple {
+    position: absolute;
+    inset: -10px;
+    border-radius: 50%;
+    border: 2px solid rgba(0, 149, 246, 0.4);
+    animation: confirmingRipple 1.8s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+  }
+
+  .reno-confirming-shield-glow {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #0095F6 0%, #0066FF 50%, #4F46E5 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 30px rgba(0, 149, 246, 0.4), 0 0 40px rgba(79, 70, 229, 0.25);
+    animation: shieldFloating 2s ease-in-out infinite alternate;
+  }
+
+  .reno-confirming-beam {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+    animation: beamSweep 1.6s infinite ease-in-out;
+  }
+
+  .reno-confirming-dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .reno-confirming-dots span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #0095F6;
+    animation: dotBlink 1.4s infinite ease-in-out both;
+  }
+
+  .reno-confirming-dots span:nth-child(1) { animation-delay: -0.32s; }
+  .reno-confirming-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+  @keyframes confirmingRipple {
+    0% { transform: scale(0.8); opacity: 0.8; }
+    100% { transform: scale(1.4); opacity: 0; }
+  }
+
+  @keyframes shieldFloating {
+    0% { transform: translateY(0px) scale(0.98); }
+    100% { transform: translateY(-6px) scale(1.02); }
+  }
+
+  @keyframes beamSweep {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  @keyframes dotBlink {
+    0%, 80%, 100% { transform: scale(0); opacity: 0.3; }
+    40% { transform: scale(1); opacity: 1; }
+  }
+
   .reno-radar-ring {
     position: absolute;
     inset: 0;

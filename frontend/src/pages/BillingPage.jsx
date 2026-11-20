@@ -221,8 +221,17 @@ export function BillingPage({
       alert('Please enter your mobile number.');
       return;
     }
-    setStep('payment_method');
+    handleResetForRetry();
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleResetForRetry = () => {
+    setIsProcessingPayment(false);
+    setPaymentError('');
+    setIsQrGenerated(false);
+    setQrData(null);
+    setRemainingTime(60);
+    setStep('payment_method');
   };
 
   // Launch Direct UPI Intent or Official Secured Checkout
@@ -271,6 +280,7 @@ export function BillingPage({
 
           // Switch screen to "Waiting for Payment Approval"
           setRemainingTime(60);
+          setIsProcessingPayment(false); // keep button active and ready if user comes back
           setStep('processing');
           window.location.href = directAppUrl;
           return;
@@ -448,16 +458,23 @@ export function BillingPage({
                           amount: qrData.amount,
                           items: cartItems
                         });
-                        changeStep('success');
-                        if (onCompletePurchase) {
-                          onCompletePurchase(cartItems, qrData.amount);
-                        }
+                        // Transition through high-tech 'confirming' stage before showing success
+                        setStep('confirming');
+                        setTimeout(() => {
+                          changeStep('success');
+                          if (onCompletePurchase) {
+                            onCompletePurchase(cartItems, qrData.amount);
+                          }
+                        }, 2200);
                         return;
                       } else if (statusData.status === 'FAILED' || statusData.status === 'CANCELLED') {
                         clearInterval(pollTimer);
                         if (countdownTimer) clearInterval(countdownTimer);
                         setPaymentError('Payment was declined or cancelled by bank partner.');
-                        changeStep('failed');
+                        setStep('confirming');
+                        setTimeout(() => {
+                          changeStep('failed');
+                        }, 1800);
                         return;
                       }
                     }
@@ -994,9 +1011,7 @@ return (
 
                                                     <button
                                                       type="button"
-                                                      onClick={() => {
-                                                        setStep('payment_method');
-                                                      }}
+                                                      onClick={handleResetForRetry}
                                                       style={{
                                                         background: '#FFFFFF',
                                                         border: '1.5px solid #D4D4D8',
@@ -1015,7 +1030,39 @@ return (
                                               )
                                             }
 
-                                                    {/* ================= STEP 4: SUCCESS / PAYMENT RECEIVED ================= */}
+                                                    
+        {/* ================= INTERMEDIATE: CONFIRMING PAYMENT ANIMATION ================= */}
+        {
+          step === 'confirming' && (
+            <div className="reno-billing-card reno-status-card" style={{ maxWidth: '480px', margin: '0 auto', textAlign: 'center', padding: '3rem 1.5rem' }}>
+              <div className="reno-confirming-anim-wrap">
+                <div className="reno-confirming-ripple" />
+                <div className="reno-confirming-shield-glow">
+                  <div className="reno-confirming-beam" />
+                  <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    <polyline points="9 12 11 14 15 10" />
+                  </svg>
+                </div>
+              </div>
+
+              <h2 style={{ fontSize: '1.6rem', fontWeight: '800', letterSpacing: '-0.02em', margin: '0 0 0.5rem', color: '#0A0A0C' }}>
+                Confirming Payment
+              </h2>
+              <p style={{ fontSize: '0.875rem', color: '#71717A', margin: '0 0 1.25rem' }}>
+                Verifying bank settlement tokens & generating your CAD licenses...
+              </p>
+
+              <div className="reno-confirming-dots">
+                <span />
+                <span />
+                <span />
+              </div>
+            </div>
+          )
+        }
+
+        {/* ================= STEP 4: SUCCESS / PAYMENT RECEIVED ================= */}
                                                     {
                                                       step === 'success' && (
                                                         <div className="reno-billing-card reno-status-card reno-success-card">
@@ -1101,7 +1148,7 @@ return (
                                                                               <button
                                                                                 type="button"
                                                                                 className="reno-retry-pay-btn"
-                                                                                onClick={() => setStep('payment_method')}
+                                                                                onClick={handleResetForRetry}
                                                                               >
                                                                                 Retry Payment
                                                                               </button>
