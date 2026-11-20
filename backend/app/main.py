@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from sqlalchemy import text
@@ -15,6 +16,14 @@ async def lifespan(app: FastAPI):
     # Startup: Create tables if not exist & auto-migrate missing columns
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        # Ensure app_settings table exists
+        await conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS app_settings (
+                key VARCHAR(100) PRIMARY KEY,
+                value TEXT NOT NULL,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        """))
         # Auto-add missing columns to existing PostgreSQL tables if not present
         await conn.execute(text("ALTER TABLE products ADD COLUMN IF NOT EXISTS pdf_document_url TEXT;"))
         await conn.execute(text("ALTER TABLE products ADD COLUMN IF NOT EXISTS document_name VARCHAR(255);"))
@@ -73,6 +82,54 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# GZip compression to cut payload bandwidth by ~70% and withstand heavy traffic loads
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+
+# Anti-DDoS & Connection Throttling In-Memory Shield
+import time
+from collections import defaultdict
+
+# Sliding window IP request tracker
+ip_request_counts = defaultdict(list)
+BAN_DURATION = 60 # 60 seconds auto-ban
+MAX_BURST_PER_SEC = 40 # Max 40 requests per second per IP (anything higher is a bot/DDoS burst)
+banned_ips = {}
+
+@app.middleware("http")
+async def anti_ddos_security_middleware(request: Request, call_next):
+    # Extract client IP
+    client_ip = request.headers.get("x-forwarded-for", "").split(",")[0].strip() or request.client.host
+    now = time.time()
+
+    # Check if client is currently in cooling-off ban
+    if client_ip in banned_ips:
+        if now < banned_ips[client_ip]:
+            return Response(
+                content='{"detail":"Access temporarily rate limited to safeguard server availability."}',
+                status_code=429,
+                media_type="application/json"
+            )
+        else:
+            del banned_ips[client_ip]
+
+    # Clean old requests older than 1 second
+    ip_history = ip_request_counts[client_ip]
+    ip_history = [t for t in ip_history if now - t < 1.0]
+    ip_history.append(now)
+    ip_request_counts[client_ip] = ip_history
+
+    # If burst limit exceeded, trigger temporary defensive freeze
+    if len(ip_history) > MAX_BURST_PER_SEC:
+        banned_ips[client_ip] = now + BAN_DURATION
+        return Response(
+            content='{"detail":"Too many rapid requests. Automated defense shield activated."}',
+            status_code=429,
+            media_type="application/json"
+        )
+
+    response = await call_next(request)
+    return response
 
 # Include API v1 Router
 app.include_router(api_router, prefix=settings.API_V1_STR)

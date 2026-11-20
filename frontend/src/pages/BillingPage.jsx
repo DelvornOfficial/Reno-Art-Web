@@ -164,6 +164,7 @@ export function BillingPage({
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [paymentError, setPaymentError] = useState('');
   const [completedOrder, setCompletedOrder] = useState(null);
+  const [remainingTime, setRemainingTime] = useState(60); // 60 seconds countdown
 
   // Calculate pricing (GST removed as requested)
   const subtotal = cartItems.reduce((acc, item) => acc + (item.price || 0), 0);
@@ -224,13 +225,64 @@ export function BillingPage({
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Launch Official Bank & UPI Secured Checkout (powered silently by Gateway)
+  // Launch Direct UPI Intent or Official Secured Checkout
   const handleLaunchPayment = async () => {
     setPaymentError('');
     setIsProcessingPayment(true);
 
     try {
-      // 1. Create order on backend
+      // Check if user is on mobile / tablet or selected Instant UPI app
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+
+      if (selectedMethod === 'upi_apps') {
+        // Direct UPI Intent App Switch (Completely bypasses Razorpay popup sheets)
+        const qrRes = await fetch(`${API_BASE_URL}/orders/create-qr`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: formData.email.trim(),
+            items: cartItems.map(item => ({
+              id: item.id,
+              price: item.price,
+              title: item.title
+            })),
+            coupon_code: appliedCoupon ? appliedCoupon.code : null
+          })
+        });
+
+        const qrOrderData = await qrRes.json();
+        if (!qrRes.ok) {
+          throw new Error(qrOrderData.detail || 'Failed to initialize UPI intent.');
+        }
+
+        const rawUpi = qrOrderData.raw_upi_intent_url;
+        setQrData(qrOrderData);
+        setIsQrGenerated(true);
+
+        if (rawUpi && isMobile) {
+          let directAppUrl = rawUpi;
+          if (selectedUpiApp === 'phonepe') {
+            directAppUrl = rawUpi.replace(/^upi:\/\/pay/, 'phonepe://pay');
+          } else if (selectedUpiApp === 'paytm') {
+            directAppUrl = rawUpi.replace(/^upi:\/\/pay/, 'paytmmp://pay');
+          } else if (selectedUpiApp === 'gpay') {
+            directAppUrl = rawUpi;
+          }
+
+          // Switch screen to "Waiting for Payment Approval"
+          setRemainingTime(60);
+          setStep('processing');
+          window.location.href = directAppUrl;
+          return;
+        } else if (!isMobile) {
+          // If on desktop and tapped Instant UPI, switch smoothly to QR view
+          setSelectedMethod('qr');
+          setIsProcessingPayment(false);
+          return;
+        }
+      }
+
+      // 1. Fallback for cards or generic checkout if needed
       const res = await fetch(`${API_BASE_URL}/orders/checkout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -268,17 +320,6 @@ export function BillingPage({
           contact: formData.phone,
           method: 'upi'
         },
-        method: {
-          upi: true,
-          card: false,
-          netbanking: false,
-          wallet: false,
-          paylater: false,
-          emi: false
-        },
-        upi: {
-          flow: 'intent'
-        },
         theme: {
           color: '#0A0A0C',
           hide_topbar: true
@@ -298,9 +339,7 @@ export function BillingPage({
             });
 
             if (verifyRes.ok) {
-              // Persist verified billing profile permanently for this user
               persistVerifiedBillingDetails(formData);
-
               setCompletedOrder({
                 orderNumber: orderData.order_number,
                 amount: orderData.amount,
@@ -331,7 +370,6 @@ export function BillingPage({
         setIsProcessingPayment(false);
         setStep('failed');
       });
-
       rzpInstance.open();
     } catch (err) {
       console.error('Payment invocation error:', err);
@@ -374,212 +412,246 @@ export function BillingPage({
     }
   };
 
-  // Poll for QR Code Payment Completion
+  // Poll for QR Code or Direct UPI Payment Completion
   useEffect(() => {
-    let timer = null;
-    if (isQrGenerated && qrData?.order_number && step === 'payment_method') {
-      timer = setInterval(async () => {
-        try {
-          const res = await fetch(`${API_BASE_URL}/orders/check-qr-status/${qrData.order_number}`);
-          if (res.ok) {
-            const statusData = await res.json();
-            if (statusData.status === 'PAID') {
-              clearInterval(timer);
-              persistVerifiedBillingDetails(formData);
-              setCompletedOrder({
-                orderNumber: qrData.order_number,
-                amount: qrData.amount,
-                items: cartItems
-              });
-              changeStep('success');
-              if (onCompletePurchase) {
-                onCompletePurchase(cartItems, qrData.amount);
-              }
-            }
+    let pollTimer = null;
+    let countdownTimer = null;
+
+    if (step === 'processing') {
+      countdownTimer = setInterval(() => {
+        setRemainingTime((prev) => {
+          if (prev <= 1) {
+            clearInterval(countdownTimer);
+            return 0;
           }
-        } catch (e) {
-          // Ignore polling errors
-        }
-      }, 3000);
+          return prev - 1;
+        });
+      }, 1000);
     }
 
-    return () => {
-      if (timer) clearInterval(timer);
-    };
-  }, [isQrGenerated, qrData, step, cartItems, onCompletePurchase]);
+    if (isQrGenerated && qrData?.order_number && (step === 'payment_method' || step === 'processing')) {
+                let pollCount = 0;
+                const maxPolls = 20; // 20 * 3s = 60s max before auto expiration
 
-  return (
-    <div className="reno-billing-page">
-      {/* Top Studio Header */}
-      <header className="reno-billing-header">
-        <a href="/" onClick={(e) => { e.preventDefault(); onNavigateToHome(); }} className="reno-billing-brand">
-          <img src={handLogo} alt="" className="reno-billing-hand" />
-          <img src={renoText} alt="RENO DESIGN" className="reno-billing-logo-text" />
-        </a>
+                pollTimer = setInterval(async () => {
+                  pollCount += 1;
+                  try {
+                    const res = await fetch(`${API_BASE_URL}/orders/check-qr-status/${qrData.order_number}`);
+                    if (res.ok) {
+                      const statusData = await res.json();
+                      if (statusData.status === 'PAID') {
+                        clearInterval(pollTimer);
+                        if (countdownTimer) clearInterval(countdownTimer);
+                        persistVerifiedBillingDetails(formData);
+                        setCompletedOrder({
+                          orderNumber: qrData.order_number,
+                          amount: qrData.amount,
+                          items: cartItems
+                        });
+                        changeStep('success');
+                        if (onCompletePurchase) {
+                          onCompletePurchase(cartItems, qrData.amount);
+                        }
+                        return;
+                      } else if (statusData.status === 'FAILED' || statusData.status === 'CANCELLED') {
+                        clearInterval(pollTimer);
+                        if (countdownTimer) clearInterval(countdownTimer);
+                        setPaymentError('Payment was declined or cancelled by bank partner.');
+                        changeStep('failed');
+                        return;
+                      }
+                    }
+                  } catch (e) {
+                    // Ignore polling errors
+                  }
 
-        {/* Step Indicator */}
-        <div className="reno-checkout-steps-badge">
-          <span className={`reno-step-dot ${step === 'billing' ? 'active' : 'done'}`}>1. Billing Details</span>
-          <span className="reno-step-arrow">→</span>
-          <span className={`reno-step-dot ${step === 'payment_method' || step === 'processing' ? 'active' : step === 'success' ? 'done' : ''}`}>2. Payment &amp; Security</span>
-          <span className="reno-step-arrow">→</span>
-          <span className={`reno-step-dot ${step === 'success' ? 'active' : ''}`}>3. Instant CAD Delivery</span>
-        </div>
+                  // If in processing step and 60 seconds expire without payment confirmation, auto-expire
+                  if (step === 'processing' && pollCount >= maxPolls) {
+                    clearInterval(pollTimer);
+                    if (countdownTimer) clearInterval(countdownTimer);
+                    setPaymentError('Payment session expired (Bank technical issue or transaction not authorized). If amount was not deducted, please try again.');
+                    changeStep('failed');
+                  }
+          }, 3000);
+    }
 
-        <button type="button" className="reno-billing-cancel-btn" onClick={onNavigateToHome}>
-          Cancel &amp; Exit
-        </button>
-      </header>
+return () => {
+  if (pollTimer) clearInterval(pollTimer);
+  if (countdownTimer) clearInterval(countdownTimer);
+};
+}, [isQrGenerated, qrData, step, cartItems, onCompletePurchase]);
 
-      <main className="reno-billing-main-container">
-        {/* ================= STEP 1: BILLING DETAILS & COUPON ================= */}
-        {step === 'billing' && (
-          <div className="reno-billing-layout">
-            {/* Left: Billing Address & Contact */}
-            <section className="reno-billing-card reno-billing-form-card">
-              <div className="reno-card-header">
-                <h2>Billing &amp; Delivery Information</h2>
-                <p>Digital CAD licenses and download links will be delivered to this verified account.</p>
+return (
+  <div className="reno-billing-page">
+    {/* Top Studio Header */}
+    <header className="reno-billing-header">
+      <a href="/" onClick={(e) => { e.preventDefault(); onNavigateToHome(); }} className="reno-billing-brand">
+        <img src={handLogo} alt="" className="reno-billing-hand" />
+        <img src={renoText} alt="RENO DESIGN" className="reno-billing-logo-text" />
+      </a>
+
+          {/* Step Indicator */}
+          <div className="reno-checkout-steps-badge">
+            <span className={`reno-step-dot ${step === 'billing' ? 'active' : 'done'}`}>1. Billing Details</span>
+            <span className="reno-step-arrow">→</span>
+            <span className={`reno-step-dot ${step === 'payment_method' || step === 'processing' ? 'active' : step === 'success' ? 'done' : ''}`}>2. Payment &amp; Security</span>
+            <span className="reno-step-arrow">→</span>
+            <span className={`reno-step-dot ${step === 'success' ? 'active' : ''}`}>3. Instant CAD Delivery</span>
+          </div>
+
+          <button type="button" className="reno-billing-cancel-btn" onClick={onNavigateToHome}>
+            Cancel &amp; Exit
+          </button>
+        </header>
+
+    <main className="reno-billing-main-container">
+      {/* ================= STEP 1: BILLING DETAILS & COUPON ================= */}
+      {step === 'billing' && (
+        <div className="reno-billing-layout">
+          {/* Left: Billing Address & Contact */}
+          <section className="reno-billing-card reno-billing-form-card">
+            <div className="reno-card-header">
+              <h2>Billing &amp; Delivery Information</h2>
+              <p>Digital CAD licenses and download links will be delivered to this verified account.</p>
+            </div>
+
+                      <form onSubmit={handleProceedToPayment} className="reno-billing-form">
+                        <div className="reno-form-row">
+                          <div className="reno-form-group">
+                            <label>Full Name *</label>
+                            <input
+                              type="text"
+                              required
+                              value={formData.fullName}
+                              onChange={(e) => updateFormField('fullName', e.target.value)}
+                              placeholder="Enter full name"
+                            />
+                          </div>
+                          <div className="reno-form-group">
+                            <label>Email Address (For CAD delivery) *</label>
+                            <input
+                              type="email"
+                              required
+                              value={formData.email}
+                              onChange={(e) => updateFormField('email', e.target.value)}
+                              placeholder="architect@studio.design"
+                            />
+                          </div>
+                        </div>
+
+                            <div className="reno-form-row">
+                              <div className="reno-form-group">
+                                <label>Mobile Number *</label>
+                                <input
+                                  type="tel"
+                                  required
+                                  value={formData.phone}
+                                  onChange={(e) => updateFormField('phone', e.target.value)}
+                                  placeholder="+91 98765 43210"
+                                />
+                                {!formData.phone && (
+                                  <span style={{ fontSize: '0.7rem', color: '#DC2626', marginTop: '2px' }}>
+                                    Required for payment updates &amp; gateway verification
+                                  </span>
+                                )}
+                              </div>
+                              <div className="reno-form-group">
+                                <label>Studio / Office Name (Optional)</label>
+                                <input
+                                  type="text"
+                                  value={formData.studioName}
+                                  onChange={(e) => updateFormField('studioName', e.target.value)}
+                                  placeholder="e.g. Reno Architecture Studio"
+                                />
+                              </div>
+                            </div>
+
+              <div className="reno-form-row">
+                <div className="reno-form-group" style={{ gridColumn: 'span 2' }}>
+                  <label>Billing Address (Optional)</label>
+                  <input
+                    type="text"
+                    value={formData.address}
+                    onChange={(e) => updateFormField('address', e.target.value)}
+                    placeholder="Street, Studio or City"
+                  />
+                </div>
               </div>
 
-              <form onSubmit={handleProceedToPayment} className="reno-billing-form">
-                <div className="reno-form-row">
-                  <div className="reno-form-group">
-                    <label>Full Name *</label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.fullName}
-                      onChange={(e) => updateFormField('fullName', e.target.value)}
-                      placeholder="Enter full name"
-                    />
-                  </div>
-                  <div className="reno-form-group">
-                    <label>Email Address (For CAD delivery) *</label>
-                    <input
-                      type="email"
-                      required
-                      value={formData.email}
-                      onChange={(e) => updateFormField('email', e.target.value)}
-                      placeholder="architect@studio.design"
-                    />
-                  </div>
-                </div>
+              <div className="reno-billing-form-actions">
+                <button type="submit" className="reno-billing-continue-btn">
+                  <span>Continue to Payment Method</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                    <polyline points="12 5 19 12 12 19" />
+                  </svg>
+                </button>
+              </div>
+            </form>
+                            </section>
 
-                <div className="reno-form-row">
-                  <div className="reno-form-group">
-                    <label>Mobile Number *</label>
-                    <input
-                      type="tel"
-                      required
-                      value={formData.phone}
-                      onChange={(e) => updateFormField('phone', e.target.value)}
-                      placeholder="+91 98765 43210"
-                    />
-                    {!formData.phone && (
-                      <span style={{ fontSize: '0.7rem', color: '#DC2626', marginTop: '2px' }}>
-                        Required for payment updates &amp; gateway verification
-                      </span>
+                            {/* Right: Order Summary & Item Selector */}
+                            <aside className="reno-billing-card reno-billing-summary-card">
+                              <div className="reno-card-header">
+                                <h3>Order Summary</h3>
+                                <span className="reno-item-count">{cartItems.length} {cartItems.length === 1 ? 'Design' : 'Designs'}</span>
+                              </div>
+
+                              {/* Multi-item Checkout mode selector */}
+                              {allCartItems && allCartItems.length > 1 && (
+                                <div className="reno-checkout-mode-switch">
+                                  <button
+                                    type="button"
+                                    className={`reno-mode-pill ${cartItems.length === allCartItems.length ? 'active' : ''}`}
+                                    onClick={() => onSelectCheckoutItem(null)}
+                                  >
+                                    Pay All Items ({allCartItems.length})
+                                  </button>
+                                  <span className="reno-mode-or">or select single item below:</span>
+                                </div>
+                              )}
+
+                              {/* Items Mini List */}
+                              <div className="reno-summary-items-list">
+                                {cartItems.map((item, idx) => (
+                <div key={`${item.id}-${idx}`} className="reno-summary-item-row">
+                  <div className="reno-summary-item-thumb" style={{ background: item.gradient || '#111' }}>
+                    {item.image_url ? (
+                      <img
+                        src={item.image_url}
+                        alt={item.title}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          borderRadius: '0.4rem'
+                        }}
+                      />
+                    ) : (
+                      <span className="reno-fmt-tag">{item.format || 'CAD'}</span>
                     )}
                   </div>
-                  <div className="reno-form-group">
-                    <label>Studio / Office Name (Optional)</label>
-                    <input
-                      type="text"
-                      value={formData.studioName}
-                      onChange={(e) => updateFormField('studioName', e.target.value)}
-                      placeholder="e.g. Reno Architecture Studio"
-                    />
+                  <div className="reno-summary-item-meta">
+                    <span className="reno-item-name">{item.title}</span>
+                    <span className="reno-item-category">
+                      {isNaN(Number(item.category)) ? (item.category || 'CAD Model') : '3D Architectural Model'}
+                    </span>
+                    {allCartItems && allCartItems.length > 1 && (
+                      <button
+                        type="button"
+                        className="reno-summary-single-btn"
+                        onClick={() => onSelectCheckoutItem(item)}
+                      >
+                        Checkout Only This
+                      </button>
+                    )}
                   </div>
+                  <span className="reno-item-price">{formatPrice(item.price).formatted}</span>
                 </div>
+              ))}
+            </div>
 
-                <div className="reno-form-row">
-                  <div className="reno-form-group" style={{ gridColumn: 'span 2' }}>
-                    <label>Billing Address (Optional)</label>
-                    <input
-                      type="text"
-                      value={formData.address}
-                      onChange={(e) => updateFormField('address', e.target.value)}
-                      placeholder="Street, Studio or City"
-                    />
-                  </div>
-                </div>
-
-                <div className="reno-billing-form-actions">
-                  <button type="submit" className="reno-billing-continue-btn">
-                    <span>Continue to Payment Method</span>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                      <line x1="5" y1="12" x2="19" y2="12" />
-                      <polyline points="12 5 19 12 12 19" />
-                    </svg>
-                  </button>
-                </div>
-              </form>
-            </section>
-
-            {/* Right: Order Summary & Item Selector */}
-            <aside className="reno-billing-card reno-billing-summary-card">
-              <div className="reno-card-header">
-                <h3>Order Summary</h3>
-                <span className="reno-item-count">{cartItems.length} {cartItems.length === 1 ? 'Design' : 'Designs'}</span>
-              </div>
-
-              {/* Multi-item Checkout mode selector */}
-              {allCartItems && allCartItems.length > 1 && (
-                <div className="reno-checkout-mode-switch">
-                  <button
-                    type="button"
-                    className={`reno-mode-pill ${cartItems.length === allCartItems.length ? 'active' : ''}`}
-                    onClick={() => onSelectCheckoutItem(null)}
-                  >
-                    Pay All Items ({allCartItems.length})
-                  </button>
-                  <span className="reno-mode-or">or select single item below:</span>
-                </div>
-              )}
-
-              {/* Items Mini List */}
-              <div className="reno-summary-items-list">
-                {cartItems.map((item, idx) => (
-                  <div key={`${item.id}-${idx}`} className="reno-summary-item-row">
-                    <div className="reno-summary-item-thumb" style={{ background: item.gradient || '#111' }}>
-                      {item.image_url ? (
-                        <img
-                          src={item.image_url}
-                          alt={item.title}
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
-                            borderRadius: '0.4rem'
-                          }}
-                        />
-                      ) : (
-                        <span className="reno-fmt-tag">{item.format || 'CAD'}</span>
-                      )}
-                    </div>
-                    <div className="reno-summary-item-meta">
-                      <span className="reno-item-name">{item.title}</span>
-                      <span className="reno-item-category">
-                        {isNaN(Number(item.category)) ? (item.category || 'CAD Model') : '3D Architectural Model'}
-                      </span>
-                      {allCartItems && allCartItems.length > 1 && (
-                        <button
-                          type="button"
-                          className="reno-summary-single-btn"
-                          onClick={() => onSelectCheckoutItem(item)}
-                        >
-                          Checkout Only This
-                        </button>
-                      )}
-                    </div>
-                    <span className="reno-item-price">{formatPrice(item.price).formatted}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Promo Coupon Section */}
-            </button>
+            {/* Promo Coupon Section */}
             <div className="reno-promo-coupon-section">
               <form onSubmit={handleApplyCoupon} className="reno-coupon-form">
                 <input
@@ -593,23 +665,24 @@ export function BillingPage({
                 {appliedCoupon ? (
                   <button type="button" onClick={handleRemoveCoupon} className="reno-remove-coupon-btn">
                     Remove
-                    ) : (
-                    <button type="submit" className="reno-apply-coupon-btn">
-                      Apply
-                    </button>
-                  )}
-                  </form>
-
-                {couponError && <p className="reno-coupon-msg error">{couponError}</p>}
-                {couponSuccess && <p className="reno-coupon-msg success">{couponSuccess}</p>}
-
-                {/* Quick Hint Chips */}
-                {!appliedCoupon && (
-                  <div className="reno-quick-coupon-hints">
-                    <span onClick={() => { setCouponInput('RENO10'); }}>Code: <strong>RENO10</strong> (10% OFF)</span>
-                    <span onClick={() => { setCouponInput('ARCH50'); }}>Code: <strong>ARCH50</strong> (₹50 OFF)</span>
-                  </div>
+                  </button>
+                ) : (
+                  <button type="submit" className="reno-apply-coupon-btn">
+                    Apply
+                  </button>
                 )}
+              </form>
+
+              {couponError && <p className="reno-coupon-msg error">{couponError}</p>}
+              {couponSuccess && <p className="reno-coupon-msg success">{couponSuccess}</p>}
+
+              {/* Quick Hint Chips */}
+              {!appliedCoupon && (
+                <div className="reno-quick-coupon-hints">
+                  <span onClick={() => { setCouponInput('RENO10'); }}>Code: <strong>RENO10</strong> (10% OFF)</span>
+                  <span onClick={() => { setCouponInput('ARCH50'); }}>Code: <strong>ARCH50</strong> (₹50 OFF)</span>
+                </div>
+              )}
             </div>
 
             {/* Pricing Breakdown Table (Zero GST) */}
@@ -632,335 +705,420 @@ export function BillingPage({
               </div>
             </div>
           </aside>
-          </div>
-  )
-}
+                          </div>
+                          )
+      }
 
-{/* ================= STEP 2: PROFESSIONAL PAYMENT METHOD SELECTION ================= */ }
-{
-  step === 'payment_method' && (
-    <div className="reno-payment-step-layout">
-      <div className="reno-billing-card reno-payment-method-card">
-        <button
-          type="button"
-          className="reno-back-to-billing-btn"
-          onClick={() => setStep('billing')}
-        >
-          ← Back to Billing Details
-        </button>
+                          {/* ================= STEP 2: PROFESSIONAL PAYMENT METHOD SELECTION ================= */}
+                          {
+                            step === 'payment_method' && (
+                              <div className="reno-payment-step-layout">
+                                <div className="reno-billing-card reno-payment-method-card">
+                                  <button
+                                    type="button"
+                                    className="reno-back-to-billing-btn"
+                                    onClick={() => setStep('billing')}
+                                  >
+                                    ← Back to Billing Details
+                                  </button>
 
-        <div className="reno-card-header">
-          <h2>Select Payment Method</h2>
-          <p>256-Bit Encrypted Bank Grade Security. Digital CAD toolpaths unlocked instantly upon approval.</p>
-        </div>
+                                  <div className="reno-card-header">
+                                    <h2>Select Payment Method</h2>
+                                    <p>256-Bit Encrypted Bank Grade Security. Digital CAD toolpaths unlocked instantly upon approval.</p>
+                                  </div>
 
-        {paymentError && (
-          <div style={{
-            padding: '0.75rem 1rem',
-            backgroundColor: '#FEF2F2',
-            border: '1px solid #FCA5A5',
-            borderRadius: '0.625rem',
-            color: '#DC2626',
-            fontSize: '0.8125rem',
-            marginBottom: '1rem'
-        marginBottom: '1rem'
-                  {paymentError}
-                </ div>
-              )}
+                                      {paymentError && (
+                                        <div style={{
+                                          padding: '0.75rem 1rem',
+                                          backgroundColor: '#FEF2F2',
+                                          border: '1px solid #FCA5A5',
+                                          borderRadius: '0.625rem',
+                                          color: '#DC2626',
+                                          fontSize: '0.8125rem',
+                                          marginBottom: '1rem'
+                                        }}>
+                                          {paymentError}
+                                        </div>
+                                      )
+              }
 
-        {/* Payment Methods Grid with Official Brand Badges */}
-        <div className="reno-payment-methods-grid">
+                                              {/* Payment Methods Grid with Official Brand Badges */}
+                                              <div className="reno-payment-methods-grid">
 
-          {/* 1. UPI Apps (PhonePe, GPay, Paytm) */}
-          <div
-            className={`reno-payment-opt-card ${selectedMethod === 'upi_apps' ? 'selected' : ''}`}
-            onClick={() => setSelectedMethod('upi_apps')}
-          >
-            <div className="reno-opt-header">
-              <input
-                type="radio"
-                name="payment_method"
-                checked={selectedMethod === 'upi_apps'}
-                onChange={() => setSelectedMethod('upi_apps')}
-              />
-              <div className="reno-opt-title-col">
-                <div className="reno-opt-title-row">
-                  <strong>Instant UPI</strong>
-                  <div className="reno-brand-badges">
-                    <GPayLogo height={16} />
-                    <PhonePeLogo height={18} />
-                    <PaytmLogo height={14} />
-                    <UpiLogo height={16} />
+                                                {/* 1. UPI Apps (PhonePe, GPay, Paytm) */}
+                                                <div
+                                                  className={`reno-payment-opt-card ${selectedMethod === 'upi_apps' ? 'selected' : ''}`}
+                                                  onClick={() => setSelectedMethod('upi_apps')}
+                                                >
+                                                  <div className="reno-opt-header">
+                                                    <input
+                                                      type="radio"
+                                                      name="payment_method"
+                                                      checked={selectedMethod === 'upi_apps'}
+                                                      onChange={() => setSelectedMethod('upi_apps')}
+                                                    />
+                                                    <div className="reno-opt-title-col">
+                                                      <div className="reno-opt-title-row">
+                                                        <strong>Instant UPI</strong>
+                                                        <div className="reno-brand-badges">
+                                                          <GPayLogo height={16} />
+                                                          <PhonePeLogo height={18} />
+                                                          <PaytmLogo height={14} />
+                                                          <UpiLogo height={16} />
+                                                        </div>
+                                                      </div>
+                                                      <span>Google Pay, PhonePe, Paytm, BHIM &amp; Any UPI App (Zero Fee)</span>
+                                                    </div>
                   </div>
-                </div>
-                <span>Google Pay, PhonePe, Paytm, BHIM &amp; Any UPI App (Zero Fee)</span>
-              </div>
-            </div>
-            {selectedMethod === 'upi_apps' && (
-              <div className="reno-upi-expanded-fields" onClick={(e) => e.stopPropagation()}>
-                <div className="reno-upi-apps-selector">
-                  <button
-                    type="button"
-                    className={`reno-upi-app-chip ${selectedUpiApp === 'gpay' ? 'active' : ''}`}
-                    onClick={() => setSelectedUpiApp('gpay')}
-                  >
-                    <GPayLogo height={16} />
-                  </button>
-                  <button
-                    type="button"
-                    className={`reno-upi-app-chip ${selectedUpiApp === 'phonepe' ? 'active' : ''}`}
-                    onClick={() => setSelectedUpiApp('phonepe')}
-                  >
-                    <PhonePeLogo height={18} />
-                    <span>PhonePe</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={`reno-upi-app-chip ${selectedUpiApp === 'paytm' ? 'active' : ''}`}
-                    onClick={() => setSelectedUpiApp('paytm')}
-                  >
-                    <PaytmLogo height={13} />
-                  </button>
-                  <button
-                    type="button"
-                    className={`reno-upi-app-chip ${selectedUpiApp === 'bhim' ? 'active' : ''}`}
-                    onClick={() => setSelectedUpiApp('bhim')}
-                  >
-                    <UpiLogo height={14} />
-                    <span>Other UPI</span>
-                  </button>
-                </div>
-                <span className="reno-method-subnote">
-                  Device me installed payment apps (GPay, PhonePe, Paytm, BHIM) se 1-tap direct payment authorize hoga.
-                </span>
-              </div>
-            )}
-          </div>
+                                                    {selectedMethod === 'upi_apps' && (
+                                                      <div className="reno-upi-expanded-fields" onClick={(e) => e.stopPropagation()}>
+                                                        <div className="reno-upi-apps-selector">
+                                                          <button
+                                                            type="button"
+                                                            className={`reno-upi-app-chip ${selectedUpiApp === 'gpay' ? 'active' : ''}`}
+                                                            onClick={() => setSelectedUpiApp('gpay')}
+                                                          >
+                                                            <GPayLogo height={16} />
+                                                          </button>
+                                                          <button
+                                                            type="button"
+                                                            className={`reno-upi-app-chip ${selectedUpiApp === 'phonepe' ? 'active' : ''}`}
+                                                            onClick={() => setSelectedUpiApp('phonepe')}
+                                                          >
+                                                            <PhonePeLogo height={18} />
+                                                            <span>PhonePe</span>
+                                                          </button>
+                                                          <button
+                                                            type="button"
+                                                            className={`reno-upi-app-chip ${selectedUpiApp === 'paytm' ? 'active' : ''}`}
+                                                            onClick={() => setSelectedUpiApp('paytm')}
+                                                          >
+                                                            <PaytmLogo height={13} />
+                                                          </button>
+                                                          <button
+                                                            type="button"
+                                                            className={`reno-upi-app-chip ${selectedUpiApp === 'bhim' ? 'active' : ''}`}
+                                                            onClick={() => setSelectedUpiApp('bhim')}
+                                                          >
+                                                            <UpiLogo height={14} />
+                                                            <span>Other UPI</span>
+                                                          </button>
+                                                        </div>
+                                                        <span className="reno-method-subnote">
+                                                          Device me installed payment apps (GPay, PhonePe, Paytm, BHIM) se 1-tap direct payment authorize hoga.
+                                                        </span>
+                                                      </div>
+                                                    )}
+                                                  </div>
 
-          {/* 2. On-Demand Dynamic QR Code */}
-          <div
-            className={`reno-payment-opt-card ${selectedMethod === 'qr' ? 'selected' : ''}`}
-            onClick={() => setSelectedMethod('qr')}
-          >
-            <div className="reno-opt-header">
-              <input
-                type="radio"
-                name="payment_method"
-                checked={selectedMethod === 'qr'}
-                onChange={() => setSelectedMethod('qr')}
-              />
-              <div className="reno-opt-title-col">
-                <div className="reno-opt-title-row">
-                  <strong>Scan UPI QR Code</strong>
-                  <div className="reno-brand-badges">
-                    <QrCodeIcon size={18} />
-                  </div>
-                </div>
-                <span>Scan &amp; Pay using any camera or UPI app</span>
-              </div>
-            </div>
+                                                  {/* 2. On-Demand Dynamic QR Code */}
+                                                  <div
+                                                    className={`reno-payment-opt-card ${selectedMethod === 'qr' ? 'selected' : ''}`}
+                                                    onClick={() => setSelectedMethod('qr')}
+                                                  >
+                                                    <div className="reno-opt-header">
+                                                      <input
+                                                        type="radio"
+                                                        name="payment_method"
+                                                        checked={selectedMethod === 'qr'}
+                                                        onChange={() => setSelectedMethod('qr')}
+                                                      />
+                                                      <div className="reno-opt-title-col">
+                                                        <div className="reno-opt-title-row">
+                                                          <strong>Scan UPI QR Code</strong>
+                                                          <div className="reno-brand-badges">
+                                                            <QrCodeIcon size={18} />
+                                                          </div>
+                                                        </div>
+                                                        <span>Scan &amp; Pay using any camera or UPI app</span>
+                                                      </div>
+                                                    </div>
 
-            {selectedMethod === 'qr' && (
-              <div className="reno-upi-expanded-fields" onClick={(e) => e.stopPropagation()}>
-                {!isQrGenerated ? (
-                  <div className="reno-qr-generate-gate">
-                    <p style={{ margin: '0 0 0.75rem', fontSize: '0.8125rem', color: '#6B6861' }}>
-                      To protect against expired codes, dynamic QR is created on-demand.
-                    </p>
+                                                    {selectedMethod === 'qr' && (
+                    <div className="reno-upi-expanded-fields" onClick={(e) => e.stopPropagation()}>
+                      {!isQrGenerated ? (
+                        <div className="reno-qr-generate-gate">
+                          <p style={{ margin: '0 0 0.75rem', fontSize: '0.8125rem', color: '#6B6861' }}>
+                            To protect against expired codes, dynamic QR is created on-demand.
+                          </p>
+                          <button
+                            type="button"
+                            className="reno-generate-qr-btn"
+                            onClick={handleGenerateQr}
+                            disabled={qrLoading}
+                          >
+                            {qrLoading ? 'Generating Secure QR...' : 'Show QR Code'}
+                          </button>
+                          {qrError && (
+                            <span style={{ color: '#DC2626', fontSize: '0.75rem', marginTop: '6px' }}>{qrError}</span>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="reno-live-qr-display">
+                          <div className="reno-qr-box">
+                            <img
+                              src={qrData.qr_image_url}
+                              alt="Dynamic UPI QR"
+                              className="reno-live-qr-img"
+                            />
+                          </div>
+                          <div className="reno-qr-meta">
+                            <span className="reno-qr-pulse-badge">Waiting for Scan &amp; Pay...</span>
+                            <span className="reno-qr-amount">Amount: <strong>{formatPrice(finalTotal).formatted}</strong></span>
+                            <span className="reno-qr-instruction">
+                              Scan this QR with any UPI App (GPay, PhonePe, Paytm). Your CAD files will automatically unlock.
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                                                </div>
+                                              </div>
+
+                                                      {/* Action Buttons to Pay */}
+                                                      {
+                                                        selectedMethod !== 'qr' && (
+                  <div className="reno-pay-trigger-actions">
                     <button
                       type="button"
-                      className="reno-generate-qr-btn"
-                      onClick={handleGenerateQr}
-                      disabled={qrLoading}
+                      className="reno-confirm-pay-btn"
+                      onClick={handleLaunchPayment}
+                      disabled={isProcessingPayment}
                     >
-                      {qrLoading ? 'Generating Secure QR...' : 'Show QR Code'}
-                    </button>
-                    {qrError && (
-                      <span style={{ color: '#DC2626', fontSize: '0.75rem', marginTop: '6px' }}>{qrError}</span>
-                    )}
-                  </div>
-                ) : (
-                  <div className="reno-live-qr-display">
-                    <div className="reno-qr-box">
-                      <img
-                        src={qrData.qr_image_url}
-                        alt="Dynamic UPI QR"
-                        className="reno-live-qr-img"
-                      />
-                    </div>
-                    <div className="reno-qr-meta">
-                      <span className="reno-qr-pulse-badge">Waiting for Scan &amp; Pay...</span>
-                      <span className="reno-qr-amount">Amount: <strong>{formatPrice(finalTotal).formatted}</strong></span>
-                      <span className="reno-qr-instruction">
-                        Scan this QR with any UPI App (GPay, PhonePe, Paytm). Your CAD files will automatically unlock.
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+                        <line x1="1" y1="10" x2="23" y2="10" />
+                      </svg>
+                      <span>
+                        {isProcessingPayment
+                          ? 'Initiating Secure Payment...'
+                          : `Complete Payment • ${formatPrice(finalTotal).formatted}`}
                       </span>
+                    </button>
+                    <div className="reno-security-trust-strip">
+                      <ShieldLockIcon size={14} className="reno-trust-lock-icon" />
+                      <span>256-Bit SSL Encrypted</span>
+                      <span>•</span>
+                      <span>PCI-DSS Compliant</span>
+                      <span>•</span>
+                      <span>Instant Digital Access</span>
                     </div>
                   </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
+                                                  )
+              }
+                                              </div >
+                                            </div >
+                                            )
+      }
 
-        {/* Action Buttons to Pay */}
-        {selectedMethod !== 'qr' && (
-          <div className="reno-pay-trigger-actions">
-            <button
-              type="button"
-              className="reno-confirm-pay-btn"
-              onClick={handleLaunchPayment}
-              disabled={isProcessingPayment}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
-                <line x1="1" y1="10" x2="23" y2="10" />
-              </svg>
-              <span>
-                {isProcessingPayment
-                  ? 'Initiating Secure Payment...'
-                  : `Complete Payment • ${formatPrice(finalTotal).formatted}`}
-              </span>
-            </button>
-            <div className="reno-security-trust-strip">
-              <ShieldLockIcon size={14} className="reno-trust-lock-icon" />
-              <span>256-Bit SSL Encrypted</span>
-              <span>•</span>
-              <span>PCI-DSS Compliant</span>
-              <span>•</span>
-              <span>Instant Digital Access</span>
-            </div>
-          </div>
-        )}
-      </div>
-          </div >
-        )
-  }
+                                            {/* ================= STEP 3: PROCESSING / WAITING FOR CONFIRMATION ================= */}
+                                            {
+                                              step === 'processing' && (
+                                                <div className="reno-billing-card reno-status-card reno-processing-card" style={{ maxWidth: '540px', margin: '0 auto', textAlign: 'center', padding: '2.5rem 1.5rem' }}>
+                                                  <div className="reno-payment-radar-spinner">
+                                                    <div className="reno-radar-ring" />
+                                                    <div className="reno-radar-center" />
+                                                  </div>
 
-  {/* ================= STEP 3: PROCESSING / WAITING FOR CONFIRMATION ================= */ }
-  {
-    step === 'processing' && (
-      <div className="reno-billing-card reno-status-card reno-processing-card">
-        <div className="reno-payment-radar-spinner">
-          <div className="reno-radar-ring" />
-          <div className="reno-radar-center" />
-        </div>
+                                                      <h2 style={{ fontSize: '1.5rem', fontWeight: '700', margin: '1rem 0 0.5rem' }}>Waiting for Payment...</h2>
 
-        <h2>Verifying Payment with Bank...</h2>
-        <p className="reno-status-desc">
-          Please approve the transaction on your banking window or app. Do not refresh this page.
-        </p>
+                                                      <div style={{
+                                                        display: 'inline-flex',
+                                                        alignItems: 'center',
+                                                        gap: '8px',
+                                                        background: '#FEF3C7',
+                                                        border: '1px solid #FDE68A',
+                                                        color: '#92400E',
+                                                        padding: '6px 14px',
+                                                        borderRadius: '999px',
+                                                        fontSize: '0.875rem',
+                                                        fontWeight: '600',
+                                                        margin: '0.5rem 0 1rem'
+                                                      }}>
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                          <circle cx="12" cy="12" r="10" />
+                                                          <polyline points="12 6 12 12 16 14" />
+                                                        </svg>
+                                                        <span>Expires in: <strong>{remainingTime}s</strong></span>
+                                                      </div>
 
-        <div className="reno-payment-amount-badge">
-          Amount: <strong>{formatPrice(finalTotal).formatted}</strong>
-        </div>
-      </div>
-    )
-  }
+                                                          <p className="reno-status-desc" style={{ fontSize: '0.875rem', color: '#52525B', margin: '0 0 1rem', lineHeight: '1.5' }}>
+                                                            Please approve the transaction in your UPI app. If payment is declined, bank fails, or time runs out, this session will automatically expire.
+                                                          </p>
 
-  {/* ================= STEP 4: SUCCESS / PAYMENT RECEIVED ================= */ }
-  {
-    step === 'success' && (
-      <div className="reno-billing-card reno-status-card reno-success-card">
-        <div className="reno-success-icon-wrap">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-            <polyline points="22 4 12 14.01 9 11.01" />
-          </svg>
-        </div>
+                                                          <div className="reno-payment-amount-badge" style={{ marginBottom: '1.5rem' }}>
+                                                            Amount: <strong>{formatPrice(finalTotal).formatted}</strong>
+                                                          </div>
 
-        <div className="reno-success-badge-row">
-          <span className="reno-received-tag">✓ PAYMENT RECEIVED</span>
-          <VerifiedLottieBadge size={22} />
-        </div>
+                                                  {/* HIGHLIGHTED ACTION BUTTONS */}
+                                                  <div style={{
+                                                    background: '#FAFAFA',
+                                                    border: '1.5px solid #E4E4E7',
+                                                    borderRadius: '12px',
+                                                    padding: '1.25rem',
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    gap: '12px',
+                                                    width: '100%'
+                                                  }}>
+                                                    <button
+                                                      type="button"
+                                                      onClick={() => {
+                                                        setPaymentError('Transaction cancelled or declined by user.');
+                                                        changeStep('failed');
+                                                      }}
+                                                      style={{
+                                                        background: '#EF4444',
+                                                        color: '#FFFFFF',
+                                                        border: 'none',
+                                                        padding: '12px 20px',
+                                                        borderRadius: '8px',
+                                                        fontSize: '0.9375rem',
+                                                        fontWeight: '700',
+                                                        cursor: 'pointer',
+                                                        boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)',
+                                                        transition: 'all 0.2s ease',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        gap: '8px'
+                                                      }}
+                                                    >
+                                                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                        <line x1="18" y1="6" x2="6" y2="18" />
+                                                        <line x1="6" y1="6" x2="18" y2="18" />
+                                                      </svg>
+                                                      <span>Cancel / Didn't Pay</span>
+                                                    </button>
 
-        <h2>Payment Successful!</h2>
-        <p className="reno-status-desc">
-          Order <strong>#{completedOrder?.orderNumber || 'RENO-COMPLETE'}</strong> verified successfully.
-          Your 3D CAD models, CNC toolpaths, and commercial license certificates are unlocked in your account.
-        </p>
+                                                    <button
+                                                      type="button"
+                                                      onClick={() => {
+                                                        setStep('payment_method');
+                                                      }}
+                                                      style={{
+                                                        background: '#FFFFFF',
+                                                        border: '1.5px solid #D4D4D8',
+                                                        color: '#18181B',
+                                                        padding: '10px 18px',
+                                                        borderRadius: '8px',
+                                                        fontSize: '0.875rem',
+                                                        fontWeight: '600',
+                                                        cursor: 'pointer'
+                                                      }}
+                                                    >
+                                                      Change Payment Method / Retry
+                                                    </button>
+                                                  </div>
+                                                </div>
+                                              )
+                                            }
 
-        <div className="reno-success-summary-card">
-          <div className="reno-success-detail-row">
-            <span>Amount Paid</span>
-            <strong>{formatPrice(completedOrder?.amount || finalTotal).formatted}</strong>
-          </div>
-          <div className="reno-success-detail-row">
-            <span>Licensed To</span>
-            <strong>{formData.fullName} ({formData.email})</strong>
-          </div>
-          <div className="reno-success-detail-row">
-            <span>Files Unlocked</span>
-            <strong>{cartItems.length} Products (.OBJ, .STL, .DXF)</strong>
-          </div>
-        </div>
+                                                    {/* ================= STEP 4: SUCCESS / PAYMENT RECEIVED ================= */}
+                                                    {
+                                                      step === 'success' && (
+                                                        <div className="reno-billing-card reno-status-card reno-success-card">
+                                                          <div className="reno-success-icon-wrap">
+                                                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                                              <polyline points="22 4 12 14.01 9 11.01" />
+                                                            </svg>
+                                                          </div>
 
-        {/* DIRECT NAVIGATION BUTTON TO "MY PRODUCTS" */}
-        <div className="reno-success-actions-block">
-          <button
-            type="button"
-            className="reno-view-purchased-btn"
-            onClick={onNavigateToProfile}
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-              <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
-              <line x1="12" y1="22.08" x2="12" y2="12" />
-            </svg>
-            <span>View Purchased Products in My Library</span>
-          </button>
+                                                          <div className="reno-success-badge-row">
+                                                            <span className="reno-received-tag">✓ PAYMENT RECEIVED</span>
+                                                            <VerifiedLottieBadge size={22} />
+                                                          </div>
 
-          <button
-            type="button"
-            className="reno-return-home-link"
-            onClick={onNavigateToHome}
-          >
-            Return to 3D Marketplace
-          </button>
-        </div>
-      </div>
-    )
-  }
+                                                          <h2>Payment Successful!</h2>
+                                                          <p className="reno-status-desc">
+                                                            Order <strong>#{completedOrder?.orderNumber || 'RENO-COMPLETE'}</strong> verified successfully.
+                                                            Your 3D CAD models, CNC toolpaths, and commercial license certificates are unlocked in your account.
+                                                          </p>
 
-  {/* ================= STEP 5: FAILED / DECLINED ================= */ }
-  {
-    step === 'failed' && (
-      <div className="reno-billing-card reno-status-card reno-failed-card">
-        <div className="reno-failed-icon-wrap">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#DC2626" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10" />
-            <line x1="15" y1="9" x2="9" y2="15" />
-            <line x1="9" y1="9" x2="15" y2="15" />
-          </svg>
-        </div>
+                                                                      <div className="reno-success-summary-card">
+                                                                        <div className="reno-success-detail-row">
+                                                                          <span>Amount Paid</span>
+                                                                          <strong>{formatPrice(completedOrder?.amount || finalTotal).formatted}</strong>
+                                                                        </div>
+                                                                        <div className="reno-success-detail-row">
+                                                                          <span>Licensed To</span>
+                                                                          <strong>{formData.fullName} ({formData.email})</strong>
+                                                                        </div>
+                                                                        <div className="reno-success-detail-row">
+                                                                          <span>Files Unlocked</span>
+                                                                          <strong>{cartItems.length} Products (.OBJ, .STL, .DXF)</strong>
+                                                                        </div>
+                                                                      </div>
 
-        <span className="reno-declined-tag">✕ TRANSACTION DECLINED</span>
-        <h2>Payment Could Not Be Completed</h2>
-        <p className="reno-status-desc">
-          {paymentError || 'Your banking partner or payment app declined the transaction. No amount has been deducted.'}
-        </p>
+                                                                        {/* DIRECT NAVIGATION BUTTON TO "MY PRODUCTS" */}
+                                                                        <div className="reno-success-actions-block">
+                                                                          <button
+                                                                            type="button"
+                                                                            className="reno-view-purchased-btn"
+                                                                            onClick={onNavigateToProfile}
+                                                                          >
+                                                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                                                              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                                                                              <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                                                                              <line x1="12" y1="22.08" x2="12" y2="12" />
+                                                                            </svg>
+                                                                            <span>View Purchased Products in My Library</span>
+                                                                          </button>
 
-        <div className="reno-failed-actions">
-          <button
-            type="button"
-            className="reno-retry-pay-btn"
-            onClick={() => setStep('payment_method')}
-          >
-            Retry Payment
-          </button>
-          <button
-            type="button"
-            className="reno-return-home-link"
-            onClick={onNavigateToHome}
-          >
-            Cancel &amp; Return to Store
-          </button>
-        </div>
-      </div>
-    )
-  }
-      </main >
-    </div >
-  );
+                                                                          <button
+                                                                            type="button"
+                                                                            className="reno-return-home-link"
+                                                                            onClick={onNavigateToHome}
+                                                                          >
+                                                                            Return to 3D Marketplace
+                                                                          </button>
+                                                                        </div>
+                                                                      </div>
+                                                                      )
+                  }
+
+                                                                      {/* ================= STEP 5: FAILED / DECLINED ================= */}
+                                                                      {
+                                                                        step === 'failed' && (
+                                                                          <div className="reno-billing-card reno-status-card reno-failed-card">
+                                                                            <div className="reno-failed-icon-wrap">
+                                                                              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#DC2626" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                                                <circle cx="12" cy="12" r="10" />
+                                                                                <line x1="15" y1="9" x2="9" y2="15" />
+                                                                                <line x1="9" y1="9" x2="15" y2="15" />
+                                                                              </svg>
+                                                                            </div>
+
+                                                                            <span className="reno-declined-tag">✕ TRANSACTION DECLINED</span>
+                                                                            <h2>Payment Could Not Be Completed</h2>
+                                                                            <p className="reno-status-desc">
+                                                                              {paymentError || 'Your banking partner or payment app declined the transaction. No amount has been deducted.'}
+                                                                            </p>
+
+                                                                            <div className="reno-failed-actions">
+                                                                              <button
+                                                                                type="button"
+                                                                                className="reno-retry-pay-btn"
+                                                                                onClick={() => setStep('payment_method')}
+                                                                              >
+                                                                                Retry Payment
+                                                                              </button>
+                                                                              <button
+                                                                                type="button"
+                                                                                className="reno-return-home-link"
+                                                                                onClick={onNavigateToHome}
+                                                                              >
+                                                                                Cancel &amp; Return to Store
+                                                                              </button>
+                                                                            </div>
+                                                                          </div>
+                                                              )
+                  }
+                                                            </main >
+                                                          </div >
+                                                  );
 }
 
-export default BillingPage;
+                                                  export default BillingPage;

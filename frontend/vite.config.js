@@ -8,5 +8,10 @@ export default defineConfig({
     host: true, // Exposes to local network (0.0.0.0)
     port: 5173,
   },
+  build: {
+    target: 'es2020',
+    cssCodeSplit: true, // Split CSS per chunk
+    chunkSizeWarningLimit: 600
+  }
 })
 

@@ -94,7 +94,35 @@ export function Sidebar({
           <span>Customers ({customersCount})</span>
         </button>
 
-        {/* 6. Media Gallery */}
+        {/* 6. Hero Banner & Content Management */}
+        <button
+          className={`crm-nav-btn ${activeTab === 'site-content' ? 'active' : ''}`}
+          onClick={() => setActiveTab('site-content')}
+        >
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+            <line x1="8" y1="21" x2="16" y2="21" />
+            <line x1="12" y1="17" x2="12" y2="21" />
+          </svg>
+          <span>Hero &amp; Announcement</span>
+        </button>
+
+        {/* 7. Footer & Legal Policies */}
+        <button
+          className={`crm-nav-btn ${activeTab === 'footer-content' ? 'active' : ''}`}
+          onClick={() => setActiveTab('footer-content')}
+        >
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          <span>Footer &amp; Legal Policies</span>
+        </button>
+
+        {/* 8. Media Gallery */}
         <button
           className={`crm-nav-btn ${activeTab === 'gallery' ? 'active' : ''}`}
           onClick={() => setActiveTab('gallery')}
@@ -107,7 +135,7 @@ export function Sidebar({
           <span>Gallery</span>
         </button>
 
-        {/* 7. Settings */}
+        {/* 8. Settings */}
         <button
           className={`crm-nav-btn ${activeTab === 'settings' ? 'active' : ''}`}
           onClick={() => setActiveTab('settings')}

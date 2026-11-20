@@ -17,6 +17,13 @@ from app.api.deps import get_optional_user, get_current_user
 from app.models.models import Order, OrderItem, PurchasedProduct, OrderStatus, User, Product
 from app.schemas.schemas import CreateOrderRequest, RazorpayOrderOut, VerifyPaymentRequest
 
+try:
+    import cv2
+    import numpy as np
+    HAS_CV2 = True
+except ImportError:
+    HAS_CV2 = False
+
 router = APIRouter(prefix="/orders", tags=["Orders & Payments"])
 
 def get_razorpay_client():
@@ -134,13 +141,32 @@ async def create_razorpay_qr(
         qr_id = qr.get("id")
         qr_image_url = qr.get("image_url")
 
-        # Crop out Razorpay branding poster and isolate pure high-contrast QR code
+        # Decode direct raw UPI Intent URL (e.g. upi://pay?...) directly from the official Razorpay QR
+        raw_upi_intent_url = None
         isolated_qr_url = qr_image_url
         try:
             r = requests.get(qr_image_url, timeout=5)
             if r.status_code == 200:
+                # 1. Extract direct UPI URI scheme for PhonePe / GPay 1-tap app switch
+                if HAS_CV2:
+                    try:
+                        img_array = np.asarray(bytearray(r.content), dtype=np.uint8)
+                        decoded_img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
+                        detector = cv2.QRCodeDetector()
+                        decoded_val, _, _ = detector.detectAndDecode(decoded_img)
+                        if decoded_val and decoded_val.startswith("upi://pay"):
+                            raw_upi_intent_url = decoded_val
+                    except Exception:
+                        pass
+
+                # Fallback: if QR decoding didn't find it or cv2 is absent, compose standard UPI merchant intent
+                if not raw_upi_intent_url:
+                    # Construct valid standard UPI intent URI using Razorpay virtual account
+                    merchant_name = "RENO DESIGN"
+                    raw_upi_intent_url = f"upi://pay?pa=harshitnayak625070.rzp@rxairtel&pn={merchant_name}&am={final_amount:.2f}&cu=INR&tn=CAD-{order_number}&tr={order_number}"
+
+                # 2. Crop out Razorpay branding poster and isolate pure high-contrast QR code
                 raw_poster = Image.open(io.BytesIO(r.content))
-                # Exact coordinates of the QR square inside Razorpay standard 674x1644 poster
                 padding = 16
                 crop_box = (max(0, 146 - padding), max(0, 658 - padding), min(raw_poster.width, 525 + padding), min(raw_poster.height, 1037 + padding))
                 cropped_qr = raw_poster.crop(crop_box)
@@ -149,8 +175,9 @@ async def create_razorpay_qr(
                 b64_str = base64.b64encode(out_buffer.getvalue()).decode("utf-8")
                 isolated_qr_url = f"data:image/png;base64,{b64_str}"
         except Exception:
-            # Fallback gracefully to original url if cropping network timeout
             isolated_qr_url = qr_image_url
+            if not raw_upi_intent_url:
+                raw_upi_intent_url = f"upi://pay?pa=harshitnayak625070.rzp@rxairtel&pn=RENO DESIGN&am={final_amount:.2f}&cu=INR&tn=CAD-{order_number}&tr={order_number}"
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to generate Razorpay QR: {str(e)}")
 
@@ -184,6 +211,7 @@ async def create_razorpay_qr(
         "qr_id": qr_id,
         "qr_image_url": isolated_qr_url,
         "raw_poster_url": qr_image_url,
+        "raw_upi_intent_url": raw_upi_intent_url,
         "amount": final_amount,
         "currency": "INR"
     }

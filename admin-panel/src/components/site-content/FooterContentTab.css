@@ -1,0 +1,283 @@
+/* Footer & Legal Policy Manager CSS */
+.crm-footer-editor-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  max-width: 1000px;
+}
+
+.crm-footer-subnav-pills {
+  display: inline-flex;
+  gap: 0.5rem;
+  background: #E5E7EB;
+  padding: 0.25rem;
+  border-radius: 8px;
+}
+
+.crm-footer-pill {
+  border: none;
+  background: transparent;
+  padding: 0.5rem 1.15rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #4B5563;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.crm-footer-pill.active {
+  background: #FFFFFF;
+  color: #0A0A0C;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.crm-footer-card {
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 1.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.crm-footer-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+@media (max-width: 768px) {
+  .crm-footer-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.crm-footer-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.crm-footer-form-group:last-child {
+  margin-bottom: 0;
+}
+
+.crm-toggle-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.crm-footer-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #4B5563;
+  font-weight: 700;
+  font-family: var(--font-family, 'Plus Jakarta Sans', sans-serif);
+}
+
+.crm-footer-input,
+.crm-footer-textarea {
+  width: 100%;
+  background: #FAF9F6;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  color: #0A0A0C;
+  font-size: 0.925rem;
+  outline: none;
+  box-sizing: border-box;
+  font-family: var(--font-family, 'Plus Jakarta Sans', sans-serif);
+  transition: all 0.15s ease;
+  line-height: 1.5;
+}
+
+.crm-footer-input:focus,
+.crm-footer-textarea:focus {
+  background: #FFFFFF;
+  border-color: #0A0A0C;
+  box-shadow: 0 0 0 3px rgba(10, 10, 12, 0.06);
+}
+
+.crm-footer-input:disabled,
+.crm-footer-textarea:disabled {
+  background: #F3F4F6;
+  color: #9CA3AF;
+  cursor: not-allowed;
+}
+
+.crm-input-footer-tagline {
+  font-family: var(--font-family, 'Plus Jakarta Sans', sans-serif) !important;
+  font-size: 0.925rem !important;
+  line-height: 1.6 !important;
+  color: #374151 !important;
+}
+
+.crm-footer-hint {
+  font-size: 0.75rem;
+  color: #6B7280;
+  margin-top: 0.25rem;
+}
+
+/* Switch Toggle Component */
+.crm-switch-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.crm-switch-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.crm-switch-slider {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+  background-color: #D1D5DB;
+  border-radius: 20px;
+  transition: all 0.2s ease;
+}
+
+.crm-switch-slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.crm-switch-toggle input:checked+.crm-switch-slider {
+  background-color: #10B981;
+}
+
+.crm-switch-toggle input:checked+.crm-switch-slider:before {
+  transform: translateX(16px);
+}
+
+.crm-switch-text {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #4B5563;
+}
+
+/* Legal Documents Selector */
+.crm-policy-selector-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.crm-policy-btn {
+  border: 1px solid #D1D5DB;
+  background: #FFFFFF;
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  font-size: 0.825rem;
+  font-weight: 700;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.crm-policy-btn:hover {
+  background: #F3F4F6;
+}
+
+.crm-policy-btn.active {
+  background: #0A0A0C;
+  color: #FFFFFF;
+  border-color: #0A0A0C;
+}
+
+
+  .crm-btn-reset-default {
+    border: 1px solid #D1D5DB;
+    background: #F9FAFB;
+    padding: 0.4rem 0.85rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #4B5563;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .crm-btn-reset-default:hover {
+    background: #FEE2E2;
+    color: #DC2626;
+    border-color: #FCA5A5;
+  }
+
+  .crm-clause-card-top {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .crm-clause-num-badge {
+    background: #0A0A0C;
+    color: #FFFFFF;
+    padding: 0.25rem 0.65rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .crm-clause-tag-input {
+    background: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    border-radius: 6px;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #1D4ED8;
+    outline: none;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .crm-clause-tag-input:focus {
+    border-color: #2563EB;
+    background: #FFFFFF;
+  }
+
+  .crm-footer-loading-box {
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 3.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    color: #6B7280;
+    font-size: 0.9rem;
+  }
+
+  .crm-footer-spinner {
+    width: 28px;
+    height: 28px;
+    border: 3px solid #E5E7EB;
+    border-top-color: #0A0A0C;
+    border-radius: 50%;
+    animation: crmSpin 0.7s linear infinite;
+  }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './Header.css';
 import handLogo from '../../../assets/hand.svg';
 import renoText from '../../../assets/reno-design.svg';
+import { API_BASE_URL } from '../../../services/api';
 
 export function Header({
   activeItem = 'Home',
@@ -19,6 +20,18 @@ export function Header({
   const [isDrawerClosing, setIsDrawerClosing] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [taglineText, setTaglineText] = useState('Tiles designing & 3D architectural patterns | Instant Digital');
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/site-content/`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data && data.announcement_tagline) {
+          setTaglineText(data.announcement_tagline);
+        }
+      })
+      .catch(() => { });
+  }, []);
 
   const closeDrawer = () => {
     setIsDrawerClosing(true);
@@ -207,10 +220,10 @@ export function Header({
       <div className="reno-mobile-tagline-container" aria-label="Announcement">
         <div className="reno-mobile-tagline-track">
           <span className="reno-mobile-tagline-text">
-            Tiles designing &amp; 3D architectural patterns <span className="reno-tagline-sep">|</span> Instant Digital
+            {taglineText}
           </span>
           <span className="reno-mobile-tagline-text" aria-hidden="true">
-            Tiles designing &amp; 3D architectural patterns <span className="reno-tagline-sep">|</span> Instant Digital
+            {taglineText}
           </span>
         </div>
       </div>
@@ -256,18 +269,18 @@ export function Header({
             </div>
 
             <ul className="reno-drawer-menu">
-                    {sidebarItems.map((item) => (
-                      <li key={item.id}>
-                        <button
-                          type="button"
-                          className="reno-drawer-link reno-drawer-btn"
-                          onClick={() => handleSidebarClick(item.id)}
-                        >
-                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                          <path d={item.icon} />
-                        </svg>
-                        <span>{item.label}</span>
-                      </button>
+              {sidebarItems.map((item) => (
+                <li key={item.id}>
+                  <button
+                    type="button"
+                    className="reno-drawer-link reno-drawer-btn"
+                    onClick={() => handleSidebarClick(item.id)}
+                  >
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                      <path d={item.icon} />
+                    </svg>
+                    <span>{item.label}</span>
+                  </button>
                 </li>
               ))}
             </ul>

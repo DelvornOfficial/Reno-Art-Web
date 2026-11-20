@@ -9,6 +9,8 @@ import ProductEditorPage from './components/product-editor/ProductEditorPage';
 import OrdersTab from './components/orders/OrdersTab';
 import CustomersTab from './components/customers/CustomersTab';
 import CustomerDetailView from './components/customer-detail/CustomerDetailView';
+import SiteContentTab from './components/site-content/SiteContentTab';
+import FooterContentTab from './components/site-content/FooterContentTab';
 import GalleryTab from './components/gallery/GalleryTab';
 import SettingsTab from './components/settings/SettingsTab';
 import { API_BASE_URL, getWebSocketUrl } from './services/api';
@@ -417,6 +419,10 @@ export default function App() {
             />
           )
         )}
+
+        {activeTab === 'site-content' && <SiteContentTab />}
+
+        {activeTab === 'footer-content' && <FooterContentTab />}
 
         {activeTab === 'gallery' && <GalleryTab />}
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import './ProductCatalog.css';
 import { useCurrency } from '../../context/CurrencyContext';
-import { fetchLiveProducts, fetchLiveCategories, getWebSocketUrl } from '../../services/api';
+import { fetchLiveProducts, fetchLiveCategories, getWebSocketUrl, API_BASE_URL } from '../../services/api';
 
 export const PRODUCT_CATEGORIES = [
   'All Designs'
@@ -28,7 +28,30 @@ export function ProductCatalog({
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [cartItems, setCartItems] = useState({});
 
+  // Dynamic Site Hero & Content Settings State
+  const [siteContent, setSiteContent] = useState({
+    hero_pill: 'Verified Production CNC & 3D Print Files',
+    hero_title: 'Architectural 3D & CNC Design Marketplace',
+    hero_description: 'Instant digital downloads for CNC stone routing, 3D printing, laser Jali cutting, and interior wall panels. Production-ready files in STL, OBJ, DXF, and DWG.',
+    stat_1_val: '500+',
+    stat_1_lbl: 'Digital Assets',
+    stat_2_val: '100%',
+    stat_2_lbl: 'CNC Toolpath Ready',
+    stat_3_val: 'Instant',
+    stat_3_lbl: 'Secure Delivery'
+  });
+
   const sentinelRef = useRef(null);
+
+  // Load site hero content from API
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/site-content/`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data) setSiteContent(prev => ({ ...prev, ...data }));
+      })
+      .catch(() => { });
+  }, []);
 
   // Load products & categories live from PostgreSQL & Listen to Realtime WebSocket
   useEffect(() => {
@@ -66,6 +89,8 @@ export function ProductCatalog({
             setCategories((prev) => [...prev, msg.category.name]);
           } else if (msg.event === 'CATEGORY_DELETED' && msg.name) {
             setCategories((prev) => prev.filter(c => c !== msg.name));
+          } else if (msg.event === 'SITE_CONTENT_UPDATED' && msg.data) {
+            setSiteContent((prev) => ({ ...prev, ...msg.data }));
           }
         } catch (e) {
           console.warn("WebSocket parse error:", e);
@@ -166,30 +191,29 @@ export function ProductCatalog({
       <div className="reno-hero-banner">
         <div className="reno-hero-content">
           <div className="reno-hero-pill">
-            <span className="reno-pill-dot" /> Verified Production CNC &amp; 3D Print Files
+            <span className="reno-pill-dot" /> {siteContent.hero_pill || 'Verified Production CNC & 3D Print Files'}
           </div>
           <h1 className="reno-hero-title">
-            Architectural 3D &amp; CNC <br className="reno-desktop-br" />
-            <span className="reno-hero-highlight">Design Marketplace</span>
+            {siteContent.hero_title || 'Architectural 3D & CNC Design Marketplace'}
           </h1>
           <p className="reno-hero-desc">
-            Instant digital downloads for CNC stone routing, 3D printing, laser Jali cutting, and interior wall panels. Production-ready files in STL, OBJ, DXF, and DWG.
+            {siteContent.hero_description || 'Instant digital downloads for CNC stone routing, 3D printing, laser Jali cutting, and interior wall panels. Production-ready files in STL, OBJ, DXF, and DWG.'}
           </p>
 
           <div className="reno-hero-stats">
             <div className="reno-stat-item">
-              <span className="reno-stat-val">500+</span>
-              <span className="reno-stat-lbl">Digital Assets</span>
+              <span className="reno-stat-val">{siteContent.stat_1_val || '500+'}</span>
+              <span className="reno-stat-lbl">{siteContent.stat_1_lbl || 'Digital Assets'}</span>
             </div>
             <div className="reno-stat-divider" />
             <div className="reno-stat-item">
-              <span className="reno-stat-val">100%</span>
-              <span className="reno-stat-lbl">CNC Toolpath Ready</span>
+              <span className="reno-stat-val">{siteContent.stat_2_val || '100%'}</span>
+              <span className="reno-stat-lbl">{siteContent.stat_2_lbl || 'CNC Toolpath Ready'}</span>
             </div>
             <div className="reno-stat-divider" />
             <div className="reno-stat-item">
-              <span className="reno-stat-val">Instant</span>
-              <span className="reno-stat-lbl">Secure Delivery</span>
+              <span className="reno-stat-val">{siteContent.stat_3_val || 'Instant'}</span>
+              <span className="reno-stat-lbl">{siteContent.stat_3_lbl || 'Secure Delivery'}</span>
             </div>
           </div>
         </div>

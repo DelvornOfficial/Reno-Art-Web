@@ -9,6 +9,7 @@
   --accent-blue: #0095F6;
   --accent-green: #10B981;
   --font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Space Grotesk', var(--font-family);
 }
 
 * {

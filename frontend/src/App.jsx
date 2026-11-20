@@ -1,18 +1,48 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import './App.css';
 import Header from './components';
-import LoginModal from './components/auth/LoginModal';
 import ProductCatalog from './components/catalog/ProductCatalog';
-import ProductDetailPage from './pages/ProductDetailPage';
-import CartDrawer from './components/cart/CartDrawer';
-import ProfilePage from './pages/ProfilePage';
-import ProfileModal from './components/profile/ProfileModal';
-import BillingPage from './pages/BillingPage';
 import CurrencySwitcher from './components/currency/CurrencySwitcher';
 import Footer from './components/footer/Footer';
-import SignupPage from './pages/SignupPage';
-import LegalPage from './pages/LegalPage';
 import { fetchProductById, pingUserActivity, fetchUserPurchases } from './services/api';
+
+// On-Demand Lazy Loaded Pages (Downloaded ONLY when visitor actually visits the page)
+const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage'));
+const BillingPage = lazy(() => import('./pages/BillingPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const SignupPage = lazy(() => import('./pages/SignupPage'));
+const LegalPage = lazy(() => import('./pages/LegalPage'));
+
+// Lazy load heavy modal & drawers
+const LoginModal = lazy(() => import('./components/auth/LoginModal'));
+const CartDrawer = lazy(() => import('./components/cart/CartDrawer'));
+const ProfileModal = lazy(() => import('./components/profile/ProfileModal'));
+
+// Ultra-fast lightweight minimal fallback loader during route transitions
+function PageLoadingFallback() {
+  return (
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: '60vh',
+      gap: '1rem',
+      color: '#6B6861',
+      fontFamily: "'Plus Jakarta Sans', sans-serif"
+    }}>
+      <div style={{
+        width: '32px',
+        height: '32px',
+        border: '2px solid rgba(10, 10, 12, 0.1)',
+        borderTopColor: '#0A0A0C',
+        borderRadius: '50%',
+        animation: 'spin 0.6s linear infinite'
+      }} />
+      <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>Loading Studio Experience...</span>
+    </div>
+  );
+}
 
 export function App() {
   const [currentRoute, setCurrentRoute] = useState(() => {
@@ -417,39 +447,43 @@ export function App() {
           cartCount={cartItems.length}
           onOpenCart={() => setIsCartOpen(true)}
         />
-        <LegalPage
-          type={currentRoute}
-          onNavigateToHome={navigateToHome}
-          onOpenLogin={handleOpenLogin}
-        />
-        <CartDrawer
-          isOpen={isCartOpen}
-          onClose={() => setIsCartOpen(false)}
-          cartItems={cartItems}
-          onRemoveItem={handleRemoveFromCart}
-          onCheckout={() => {
-            setCheckoutItems(null);
-            handleCheckout();
-          }}
-          onSingleCheckout={(singleItem) => {
-            setCheckoutItems([singleItem]);
-            handleCheckout();
-          }}
-          isLoggedIn={isLoggedIn}
-          onOpenLogin={handleOpenLogin}
-        />
-        <LoginModal
-          isOpen={isLoginOpen}
-          onClose={handleCloseLogin}
-          onNavigateToSignup={navigateToSignup}
-          onLoginSuccess={handleLoginSuccess}
-        />
-        <ProfileModal
-          isOpen={isProfileOpen}
-          onClose={() => setIsProfileOpen(false)}
-          user={user}
-          onLogout={handleLogout}
-        />
+        <Suspense fallback={<PageLoadingFallback />}>
+          <LegalPage
+            type={currentRoute}
+            onNavigateToHome={navigateToHome}
+            onOpenLogin={handleOpenLogin}
+          />
+        </Suspense>
+        <Suspense fallback={null}>
+          <CartDrawer
+            isOpen={isCartOpen}
+            onClose={() => setIsCartOpen(false)}
+            cartItems={cartItems}
+            onRemoveItem={handleRemoveFromCart}
+            onCheckout={() => {
+              setCheckoutItems(null);
+              handleCheckout();
+            }}
+            onSingleCheckout={(singleItem) => {
+              setCheckoutItems([singleItem]);
+              handleCheckout();
+            }}
+            isLoggedIn={isLoggedIn}
+            onOpenLogin={handleOpenLogin}
+          />
+          <LoginModal
+            isOpen={isLoginOpen}
+            onClose={handleCloseLogin}
+            onNavigateToSignup={navigateToSignup}
+            onLoginSuccess={handleLoginSuccess}
+          />
+          <ProfileModal
+            isOpen={isProfileOpen}
+            onClose={() => setIsProfileOpen(false)}
+            user={user}
+            onLogout={handleLogout}
+          />
+        </Suspense>
         <CurrencySwitcher />
       </div>
     );
@@ -459,15 +493,17 @@ export function App() {
   if (currentRoute === 'billing') {
     return (
       <div className="app-container">
-        <BillingPage
-          cartItems={checkoutItems && checkoutItems.length > 0 ? checkoutItems : cartItems}
-          allCartItems={cartItems}
-          user={user}
-          onNavigateToHome={navigateToHome}
-          onNavigateToProfile={() => navigateToProfileTab('my-product')}
-          onCompletePurchase={handleCompletePurchase}
-          onSelectCheckoutItem={(item) => setCheckoutItems(item ? [item] : null)}
-        />
+        <Suspense fallback={<PageLoadingFallback />}>
+          <BillingPage
+            cartItems={checkoutItems && checkoutItems.length > 0 ? checkoutItems : cartItems}
+            allCartItems={cartItems}
+            user={user}
+            onNavigateToHome={navigateToHome}
+            onNavigateToProfile={() => navigateToProfileTab('my-product')}
+            onCompletePurchase={handleCompletePurchase}
+            onSelectCheckoutItem={(item) => setCheckoutItems(item ? [item] : null)}
+          />
+        </Suspense>
       </div>
     );
   }
@@ -476,15 +512,17 @@ export function App() {
   if (currentRoute === 'profile') {
     return (
       <div className="app-container">
-        <ProfilePage
-          user={user}
-          onNavigateToHome={navigateToHome}
-          onLogout={handleLogout}
-          onTogglePlan={handleTogglePlan}
-          purchasedProducts={purchasedProducts}
-          activeSidebarItem={activeProfileTab}
-          onSelectSidebarItem={(tabId) => setActiveProfileTab(tabId)}
-        />
+        <Suspense fallback={<PageLoadingFallback />}>
+          <ProfilePage
+            user={user}
+            onNavigateToHome={navigateToHome}
+            onLogout={handleLogout}
+            onTogglePlan={handleTogglePlan}
+            purchasedProducts={purchasedProducts}
+            activeSidebarItem={activeProfileTab}
+            onSelectSidebarItem={(tabId) => setActiveProfileTab(tabId)}
+          />
+        </Suspense>
       </div>
     );
   }
@@ -492,11 +530,13 @@ export function App() {
   // If on signup page, render the dedicated page
   if (currentRoute === 'signup') {
     return (
-      <SignupPage
-        onNavigateToHome={navigateToHome}
-        onOpenLogin={handleOpenLogin}
-        onSignupSuccess={handleLoginSuccess}
-      />
+      <Suspense fallback={<PageLoadingFallback />}>
+        <SignupPage
+          onNavigateToHome={navigateToHome}
+          onOpenLogin={handleOpenLogin}
+          onSignupSuccess={handleLoginSuccess}
+        />
+      </Suspense>
     );
   }
 
@@ -527,41 +567,41 @@ export function App() {
       {/* Modern Minimalist Footer */}
       <Footer />
 
-      {/* Shopping Cart Drawer */}
-      <CartDrawer
-        isOpen={isCartOpen}
-        onClose={() => setIsCartOpen(false)}
-        cartItems={cartItems}
-        onRemoveItem={handleRemoveFromCart}
-        onCheckout={() => {
-          setCheckoutItems(null);
-          handleCheckout();
-        }}
-        onSingleCheckout={(singleItem) => {
-          setCheckoutItems([singleItem]);
-          handleCheckout();
-        }}
-        isLoggedIn={isLoggedIn}
-        onOpenLogin={handleOpenLogin}
-      />
+      {/* Shopping Cart Drawer, Login & Profile (Suspense Isolated) */}
+      <Suspense fallback={null}>
+        <CartDrawer
+          isOpen={isCartOpen}
+          onClose={() => setIsCartOpen(false)}
+          cartItems={cartItems}
+          onRemoveItem={handleRemoveFromCart}
+          onCheckout={() => {
+            setCheckoutItems(null);
+            handleCheckout();
+          }}
+          onSingleCheckout={(singleItem) => {
+            setCheckoutItems([singleItem]);
+            handleCheckout();
+          }}
+          isLoggedIn={isLoggedIn}
+          onOpenLogin={handleOpenLogin}
+        />
 
-      {/* Login Overlay Modal */}
-      <LoginModal
-        isOpen={isLoginOpen}
-        onClose={handleCloseLogin}
-        onNavigateToSignup={navigateToSignup}
-        onLoginSuccess={handleLoginSuccess}
-      />
+        <LoginModal
+          isOpen={isLoginOpen}
+          onClose={handleCloseLogin}
+          onNavigateToSignup={navigateToSignup}
+          onLoginSuccess={handleLoginSuccess}
+        />
 
-      {/* User Profile Modal */}
-      <ProfileModal
-        isOpen={isProfileOpen}
-        onClose={() => setIsProfileOpen(false)}
-        user={user}
-        onLogout={handleLogout}
-      />
+        <ProfileModal
+          isOpen={isProfileOpen}
+          onClose={() => setIsProfileOpen(false)}
+          user={user}
+          onLogout={handleLogout}
+        />
+      </Suspense>
 
-      {/* Real-time Side Currency Switcher */}
+      {/* Floating Currency Selector */}
       <CurrencySwitcher />
     </div>
   );
