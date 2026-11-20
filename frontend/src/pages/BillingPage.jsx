@@ -150,6 +150,12 @@ export function BillingPage({
   const [couponError, setCouponError] = useState('');
   const [couponSuccess, setCouponSuccess] = useState('');
 
+  // Billing form editing state (collapsible compact pill on mobile)
+  const [isEditingBilling, setIsEditingBilling] = useState(() => {
+    // If name and phone exist, collapse by default so user sees clean summary
+    return !(formData?.fullName && formData?.phone);
+  });
+
   // Selected payment method: 'upi_apps' | 'qr'
   const [selectedMethod, setSelectedMethod] = useState('upi_apps');
   const [selectedUpiApp, setSelectedUpiApp] = useState('gpay');
@@ -510,85 +516,143 @@ return (
         <div className="reno-billing-layout">
           {/* Left: Billing Address & Contact */}
           <section className="reno-billing-card reno-billing-form-card">
-            <div className="reno-card-header">
-              <h2>Billing &amp; Delivery Information</h2>
-              <p>Digital CAD licenses and download links will be delivered to this verified account.</p>
-            </div>
-
-                      <form onSubmit={handleProceedToPayment} className="reno-billing-form">
-                        <div className="reno-form-row">
-                          <div className="reno-form-group">
-                            <label>Full Name *</label>
-                            <input
-                              type="text"
-                              required
-                              value={formData.fullName}
-                              onChange={(e) => updateFormField('fullName', e.target.value)}
-                              placeholder="Enter full name"
-                            />
-                          </div>
-                          <div className="reno-form-group">
-                            <label>Email Address (For CAD delivery) *</label>
-                            <input
-                              type="email"
-                              required
-                              value={formData.email}
-                              onChange={(e) => updateFormField('email', e.target.value)}
-                              placeholder="architect@studio.design"
-                            />
-                          </div>
-                        </div>
-
-                            <div className="reno-form-row">
-                              <div className="reno-form-group">
-                                <label>Mobile Number *</label>
-                                <input
-                                  type="tel"
-                                  required
-                                  value={formData.phone}
-                                  onChange={(e) => updateFormField('phone', e.target.value)}
-                                  placeholder="+91 98765 43210"
-                                />
-                                {!formData.phone && (
-                                  <span style={{ fontSize: '0.7rem', color: '#DC2626', marginTop: '2px' }}>
-                                    Required for payment updates &amp; gateway verification
-                                  </span>
-                                )}
-                              </div>
-                              <div className="reno-form-group">
-                                <label>Studio / Office Name (Optional)</label>
-                                <input
-                                  type="text"
-                                  value={formData.studioName}
-                                  onChange={(e) => updateFormField('studioName', e.target.value)}
-                                  placeholder="e.g. Reno Architecture Studio"
-                                />
-                              </div>
-                            </div>
-
-              <div className="reno-form-row">
-                <div className="reno-form-group" style={{ gridColumn: 'span 2' }}>
-                  <label>Billing Address (Optional)</label>
-                  <input
-                    type="text"
-                    value={formData.address}
-                    onChange={(e) => updateFormField('address', e.target.value)}
-                    placeholder="Street, Studio or City"
-                  />
+            {/* If data exists and not explicitly editing, show compact luxury summary pill */}
+            {!isEditingBilling && formData.fullName ? (
+              <div className="reno-billing-saved-pill-card">
+                <div className="reno-saved-pill-left">
+                  <div className="reno-saved-pill-avatar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                      <circle cx="12" cy="7" r="4" />
+                    </svg>
+                  </div>
+                  <div className="reno-saved-pill-meta">
+                    <div className="reno-saved-pill-title-row">
+                      <strong className="reno-saved-pill-name">{formData.fullName}</strong>
+                      <span className="reno-saved-pill-verified">Verified</span>
+                    </div>
+                    <span className="reno-saved-pill-contact">{formData.email} &bull; {formData.phone}</span>
+                    {formData.address && (
+                      <span className="reno-saved-pill-addr">{formData.address}</span>
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              <div className="reno-billing-form-actions-desktop">
-                <button type="submit" className="reno-billing-continue-btn">
-                  <span>Continue to Payment Method</span>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                    <polyline points="12 5 19 12 12 19" />
+                <button
+                  type="button"
+                  className="reno-saved-pill-edit-btn"
+                  onClick={() => setIsEditingBilling(true)}
+                  title="Edit details"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 20h9" />
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
                   </svg>
+                  <span>Edit</span>
                 </button>
               </div>
-            </form>
-                            </section>
+            ) : (
+              <div>
+                <div className="reno-card-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div>
+                    <h2>Billing &amp; Delivery Information</h2>
+                    <p>Digital CAD licenses and download links will be delivered to this verified account.</p>
+                  </div>
+                  {formData.fullName && (
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingBilling(false)}
+                      style={{
+                        background: '#FAF9F6',
+                        border: '1px solid rgba(10,10,12,0.12)',
+                        padding: '4px 10px',
+                        borderRadius: '6px',
+                        fontSize: '0.75rem',
+                        fontWeight: '700',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Done
+                    </button>
+                  )}
+                </div>
+
+                <form onSubmit={handleProceedToPayment} className="reno-billing-form">
+                  <div className="reno-form-row">
+                    <div className="reno-form-group">
+                      <label>Full Name *</label>
+                      <input
+                        type="text"
+                        required
+                        value={formData.fullName}
+                        onChange={(e) => updateFormField('fullName', e.target.value)}
+                        placeholder="Enter full name"
+                      />
+                    </div>
+                    <div className="reno-form-group">
+                      <label>Email Address (For CAD delivery) *</label>
+                      <input
+                        type="email"
+                        required
+                        value={formData.email}
+                        onChange={(e) => updateFormField('email', e.target.value)}
+                        placeholder="architect@studio.design"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="reno-form-row">
+                    <div className="reno-form-group">
+                      <label>Mobile Number *</label>
+                      <input
+                        type="tel"
+                        required
+                        value={formData.phone}
+                        onChange={(e) => updateFormField('phone', e.target.value)}
+                        placeholder="+91 98765 43210"
+                      />
+                      {!formData.phone && (
+                        <span style={{ fontSize: '0.7rem', color: '#DC2626', marginTop: '2px' }}>
+                          Required for payment updates &amp; gateway verification
+                        </span>
+                      )}
+                    </div>
+                    <div className="reno-form-group">
+                      <label>Studio / Office Name (Optional)</label>
+                      <input
+                        type="text"
+                        value={formData.studioName}
+                        onChange={(e) => updateFormField('studioName', e.target.value)}
+                        placeholder="e.g. Reno Architecture Studio"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="reno-form-row">
+                    <div className="reno-form-group" style={{ gridColumn: 'span 2' }}>
+                      <label>Billing Address (Optional)</label>
+                      <input
+                        type="text"
+                        value={formData.address}
+                        onChange={(e) => updateFormField('address', e.target.value)}
+                        placeholder="Street, Studio or City"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="reno-billing-form-actions-desktop">
+                    <button type="submit" className="reno-billing-continue-btn">
+                      <span>Save &amp; Continue</span>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                        <polyline points="12 5 19 12 12 19" />
+                      </svg>
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+          </section>
 
                             {/* Right: Order Summary & Item Selector */}
                             <aside className="reno-billing-card reno-billing-summary-card">
