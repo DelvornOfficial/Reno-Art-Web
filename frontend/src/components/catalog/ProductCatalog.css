@@ -12,108 +12,96 @@
 }
 
 /* Real Architectural Loading Line (No Emojis) */
+/* Real Architectural Loading Spinner (Round Spinner) */
 .reno-catalog-loader-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding-block: 5rem;
+  padding-block: 4.5rem;
   gap: 1.25rem;
   width: 100%;
 }
 
-.reno-catalog-linear-track {
-  width: 100%;
-  max-width: 320px;
-  height: 3px;
-  background-color: rgba(10, 10, 12, 0.08);
-  border-radius: 9999px;
-  overflow: hidden;
-  position: relative;
-}
 
-.reno-catalog-linear-bar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: 35%;
-  background-color: #0A0A0C;
-  border-radius: 9999px;
-  animation: renoLinearProgress 1.4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
-}
-
-@keyframes renoLinearProgress {
-  0% {
-    left: -35%;
-    width: 30%;
-  }
-  50% {
-    width: 50%;
-  }
-  100% {
-    left: 100%;
-    width: 25%;
-  }
-}
-
-.reno-catalog-loader-text {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: #6B6861;
-  letter-spacing: 0.02em;
-}
-
-/* Hero Store Banner - High Luxury Minimalist */
-.reno-hero-banner {
-  padding-block: 2rem 0.5rem;
-  text-align: center;
-  position: relative;
-  margin-block-end: 0.5rem;
-}
-
-.reno-hero-content {
-  max-inline-size: 720px;
-  margin-inline: auto;
-}
-
-  .reno-hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.35rem 0.85rem;
-    background-color: #FFFFFF;
-    border: 1px solid rgba(10, 10, 12, 0.08);
-    border-radius: 9999px;
-    box-shadow: 0 2px 8px rgba(10, 10, 12, 0.03);
-    margin-block-end: 1rem;
+  .reno-catalog-round-spinner {
+    width: 38px;
+    height: 38px;
+    border: 3px solid rgba(10, 10, 12, 0.08);
+    border-top-color: #0A0A0C;
+    border-radius: 50%;
+    animation: renoRoundSpin 0.75s linear infinite;
   }
 
-    .reno-badge-dot {
-      inline-size: 6px;
-      block-size: 6px;
-      background-color: #10B981;
-      border-radius: 50%;
-      box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+    @keyframes renoRoundSpin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
     }
 
-    .reno-badge-text {
-      font-size: 0.6875rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      color: #0A0A0C;
-      text-transform: uppercase;
-    }
 
-    .reno-hero-title {
-      margin: 0 0 0.75rem 0;
-      font-family: var(--font-heading, inherit);
-      font-size: clamp(1.75rem, 5vw, 3rem);
-      font-weight: 700;
-      line-height: 1.2;
-      letter-spacing: -0.03em;
-      color: #0A0A0C;
-    }
+      .reno-catalog-loader-text {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: #6B6861;
+        letter-spacing: 0.02em;
+      }
+
+
+        /* Hero Store Banner - High Luxury Minimalist */
+        .reno-hero-banner {
+          padding-block: 2rem 0.5rem;
+          text-align: center;
+          position: relative;
+          margin-block-end: 0.5rem;
+        }
+
+      .reno-hero-content {
+        max-inline-size: 720px;
+        margin-inline: auto;
+      }
+
+      .reno-hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.35rem 0.85rem;
+        background-color: #FFFFFF;
+        border: 1px solid rgba(10, 10, 12, 0.08);
+        border-radius: 9999px;
+        box-shadow: 0 2px 8px rgba(10, 10, 12, 0.03);
+        margin-block-end: 1rem;
+      }
+
+      .reno-badge-dot {
+        inline-size: 6px;
+        block-size: 6px;
+        background-color: #10B981;
+        border-radius: 50%;
+        box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+      }
+
+      .reno-badge-text {
+        font-size: 0.6875rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        color: #0A0A0C;
+        text-transform: uppercase;
+      }
+
+      .reno-hero-title {
+        margin: 0 0 0.75rem 0;
+        font-family: var(--font-heading, inherit);
+        font-size: clamp(1.75rem, 5vw, 3rem);
+        font-weight: 700;
+        line-height: 1.2;
+        letter-spacing: -0.03em;
+        color: #0A0A0C;
+      }
 
 
       .reno-hero-sub-title {

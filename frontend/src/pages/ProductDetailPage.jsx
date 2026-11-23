@@ -8,6 +8,7 @@ import {
   updateProductReview,
   getWebSocketUrl
 } from '../services/api';
+import { useToast } from '../context/ToastContext';
 
 export function ProductDetailPage({
   product,
@@ -17,8 +18,10 @@ export function ProductDetailPage({
   onOpenLogin,
   onAddToCart,
   onBuyNow,
-  cartProductIds = []
+  cartProductIds = [],
+  isPurchased = false
 }) {
+  const { showToast } = useToast();
   const { formatPrice } = useCurrency();
 
   // Review states
@@ -129,7 +132,7 @@ export function ProductDetailPage({
   const handleSubmitReview = async (e) => {
     e.preventDefault();
     if (!reviewComment.trim()) {
-      alert("Please enter your review comments.");
+      showToast("Please enter your review comments.", "warning");
       return;
     }
     if (!user || !user.id) {
@@ -160,7 +163,7 @@ export function ProductDetailPage({
         setReviewMsg('Thank you! Your verified purchase review has been published.');
       }
     } catch (err) {
-      alert(err.message || 'Failed to submit review');
+      showToast(err.message || 'Failed to submit review', 'error');
     } finally {
       setIsSubmittingReview(false);
     }
@@ -341,7 +344,7 @@ export function ProductDetailPage({
 
             {/* CTA Buttons: Add to Cart + Buy Now OR Already Purchased Badge */}
             <div className="reno-product-actions">
-                      {eligibility.has_purchased ? (
+              {(isPurchased || eligibility.has_purchased) ? (
                 <div style={{
                   width: '100%',
                   display: 'flex',
@@ -370,7 +373,7 @@ export function ProductDetailPage({
                   <button
                     type="button"
                     onClick={() => {
-                      if (window.location) window.location.href = '/profile';
+                      if (window.location) window.location.href = '/my-products';
                     }}
                     style={{
                       background: '#15803D',
@@ -387,7 +390,7 @@ export function ProductDetailPage({
                       boxShadow: '0 2px 4px rgba(21, 128, 61, 0.2)'
                     }}
                   >
-                    View in Profile →
+                    View in My Products &rarr;
                   </button>
                 </div>
               ) : (
@@ -428,296 +431,296 @@ export function ProductDetailPage({
                   </button>
                 </>
               )}
+            </div>
+
+            {/* Description Block */}
+            <div className="reno-product-section-block">
+              <h3 className="reno-section-title">Architectural Specification</h3>
+              <p className="reno-product-description-text">{product.description}</p>
+
+              {/* Product Gallery / Description Images Showcase (Strictly Independent from Product 3D Stage) */}
+              {
+                descriptionImages.length > 0 && (
+                  <div style={{ marginTop: '1.5rem' }}>
+                    <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#8E8A80', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.85rem' }}>
+                      Reference Renders &amp; Detail Views
+                    </div>
+                    {/* Single column stack: Ek line me strictly ek hi description image full width */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                      {descriptionImages.map((img, idx) => (
+                        <div
+                          key={idx}
+                          onClick={() => setSelectedDescriptionImage(img)}
+                          title="Click to view full preview"
+                          style={{
+                            width: '100%',
+                            borderRadius: '12px',
+                            overflow: 'hidden',
+                            border: '1px solid rgba(10, 10, 12, 0.12)',
+                            cursor: 'pointer',
+                            background: '#F4F1EA',
+                            position: 'relative',
+                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+                            transition: 'transform 0.15s ease, box-shadow 0.15s ease'
+                          }}
+                        >
+                          <img
+                            src={img}
+                            alt={`Detail ${idx + 1}`}
+                            style={{
+                              width: '100%',
+                              height: 'auto',
+                              maxHeight: '480px',
+                              objectFit: 'contain',
+                              display: 'block',
+                              background: '#FAF9F6'
+                            }}
+                          />
+                          <div
+                            style={{
+                              position: 'absolute',
+                              inset: 0,
+                              background: 'rgba(0,0,0,0.18)',
+                              opacity: 0,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '0.5rem',
+                              color: '#FFFFFF',
+                              fontWeight: 600,
+                              fontSize: '0.85rem',
+                              transition: 'opacity 0.2s ease'
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+                            onMouseLeave={(e) => e.currentTarget.style.opacity = '0'}
+                          >
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <circle cx="11" cy="11" r="8" />
+                              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                              <line x1="11" y1="8" x2="11" y2="14" />
+                              <line x1="8" y1="11" x2="14" y2="11" />
+                            </svg>
+                            <span>Click to Zoom &amp; Inspect Specification</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
+                )}
+            </div>
 
-                {/* Description Block */}
-                <div className="reno-product-section-block">
-                  <h3 className="reno-section-title">Architectural Specification</h3>
-                  <p className="reno-product-description-text">{product.description}</p>
+            {/* Technical Specifications Specs (Live from PostgreSQL & Admin Edit) */}
+            <div className="reno-product-specs-box">
+              <h3 className="reno-section-title">File &amp; Toolpath Specs</h3>
+              <div className="reno-specs-list">
+                {product.custom_specs && product.custom_specs.length > 0 ? (
+                  product.custom_specs.map((spec, idx) => (
+                    <div key={idx} className="reno-spec-row">
+                      <span className="reno-spec-name">{spec.key}</span>
+                      <span className="reno-spec-val">
+                        {idx === 0 ? <strong>{spec.value}</strong> : spec.value}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <>
+                    <div className="reno-spec-row">
+                      <span className="reno-spec-name">Included Formats</span>
+                      <span className="reno-spec-val"><strong>{product.format || 'OBJ / STL / DWG'}</strong></span>
+                    </div>
+                    <div className="reno-spec-row">
+                      <span className="reno-spec-name">Mesh Topology</span>
+                      <span className="reno-spec-val">{product.mesh_topology || 'Closed Manifold / Slicer Optimized'}</span>
+                    </div>
+                    <div className="reno-spec-row">
+                      <span className="reno-spec-name">Machine Compatibility</span>
+                      <span className="reno-spec-val">{product.machine_compatibility || '3-Axis CNC Router, 5-Axis Stone Mill, 3D Printer, Fiber Laser'}</span>
+                    </div>
+                    <div className="reno-spec-row">
+                      <span className="reno-spec-name">Supported CAM</span>
+                      <span className="reno-spec-val">{product.supported_cam || 'ArtCAM, Vectric Aspire, Fusion 360, RhinoCAM, AutoCAD'}</span>
+                    </div>
+                    <div className="reno-spec-row">
+                      <span className="reno-spec-name">Commercial License</span>
+                      <span className="reno-spec-val">{product.commercial_license || 'Unlimited Physical Fabrication – Royalty-Free'}</span>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
 
-                  {/* Product Gallery / Description Images Showcase (Strictly Independent from Product 3D Stage) */}
-                  {
-                    descriptionImages.length > 0 && (
-                      <div style={{ marginTop: '1.5rem' }}>
-                        <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#8E8A80', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.85rem' }}>
-                          Reference Renders &amp; Detail Views
-                        </div>
-                        {/* Single column stack: Ek line me strictly ek hi description image full width */}
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                          {descriptionImages.map((img, idx) => (
-                            <div
-                              key={idx}
-                              onClick={() => setSelectedDescriptionImage(img)}
-                              title="Click to view full preview"
-                              style={{
-                                width: '100%',
-                                borderRadius: '12px',
-                                overflow: 'hidden',
-                                border: '1px solid rgba(10, 10, 12, 0.12)',
-                                cursor: 'pointer',
-                                background: '#F4F1EA',
-                                position: 'relative',
-                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
-                                transition: 'transform 0.15s ease, box-shadow 0.15s ease'
-                              }}
-                            >
-                              <img
-                                src={img}
-                                alt={`Detail ${idx + 1}`}
-                                style={{
-                                  width: '100%',
-                                  height: 'auto',
-                                  maxHeight: '480px',
-                                  objectFit: 'contain',
-                                  display: 'block',
-                                  background: '#FAF9F6'
-                                }}
-                              />
-                              <div
-                                style={{
-                                  position: 'absolute',
-                                  inset: 0,
-                                  background: 'rgba(0,0,0,0.18)',
-                                  opacity: 0,
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  gap: '0.5rem',
-                                  color: '#FFFFFF',
-                                  fontWeight: 600,
-                                  fontSize: '0.85rem',
-                                  transition: 'opacity 0.2s ease'
-                                }}
-                                onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
-                                onMouseLeave={(e) => e.currentTarget.style.opacity = '0'}
-                              >
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                  <circle cx="11" cy="11" r="8" />
-                                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                                  <line x1="11" y1="8" x2="11" y2="14" />
-                                  <line x1="8" y1="11" x2="14" y2="11" />
-                                </svg>
-                                <span>Click to Zoom &amp; Inspect Specification</span>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                </div>
-
-                {/* Technical Specifications Specs (Live from PostgreSQL & Admin Edit) */}
-                <div className="reno-product-specs-box">
-                  <h3 className="reno-section-title">File &amp; Toolpath Specs</h3>
-                  <div className="reno-specs-list">
-                    {product.custom_specs && product.custom_specs.length > 0 ? (
-                      product.custom_specs.map((spec, idx) => (
-                        <div key={idx} className="reno-spec-row">
-                          <span className="reno-spec-name">{spec.key}</span>
-                          <span className="reno-spec-val">
-                            {idx === 0 ? <strong>{spec.value}</strong> : spec.value}
-                          </span>
-                        </div>
-                      ))
-                    ) : (
-                      <>
-                        <div className="reno-spec-row">
-                          <span className="reno-spec-name">Included Formats</span>
-                          <span className="reno-spec-val"><strong>{product.format || 'OBJ / STL / DWG'}</strong></span>
-                        </div>
-                        <div className="reno-spec-row">
-                          <span className="reno-spec-name">Mesh Topology</span>
-                          <span className="reno-spec-val">{product.mesh_topology || 'Closed Manifold / Slicer Optimized'}</span>
-                        </div>
-                        <div className="reno-spec-row">
-                          <span className="reno-spec-name">Machine Compatibility</span>
-                          <span className="reno-spec-val">{product.machine_compatibility || '3-Axis CNC Router, 5-Axis Stone Mill, 3D Printer, Fiber Laser'}</span>
-                        </div>
-                        <div className="reno-spec-row">
-                          <span className="reno-spec-name">Supported CAM</span>
-                          <span className="reno-spec-val">{product.supported_cam || 'ArtCAM, Vectric Aspire, Fusion 360, RhinoCAM, AutoCAD'}</span>
-                        </div>
-                        <div className="reno-spec-row">
-                          <span className="reno-spec-name">Commercial License</span>
-                          <span className="reno-spec-val">{product.commercial_license || 'Unlimited Physical Fabrication – Royalty-Free'}</span>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
+        {/* Genuine Verified Customer Reviews Section (Bottom of Page) */}
+        <section className="reno-reviews-section" style={{ marginTop: '3.5rem', borderTop: '1px solid rgba(10, 10, 12, 0.1)', paddingTop: '2.5rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+            <div>
+              <h2 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0 }}>Customer Reviews</h2>
+              <p style={{ color: '#6B6861', fontSize: '0.85rem', margin: '0.25rem 0 0' }}>
+                Only verified customers who purchased this design file can post reviews. (Zero fake reviews)
+              </p>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span style={{ fontSize: '1.25rem', fontWeight: 800 }}>
+                ★ {reviews.length > 0 ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1) : '5.0'}
+              </span>
+              <span style={{ fontSize: '0.85rem', color: '#6B6861' }}>({reviews.length} Verified Reviews)</span>
             </div>
           </div>
 
-          {/* Genuine Verified Customer Reviews Section (Bottom of Page) */}
-          <section className="reno-reviews-section" style={{ marginTop: '3.5rem', borderTop: '1px solid rgba(10, 10, 12, 0.1)', paddingTop: '2.5rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-              <div>
-                <h2 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0 }}>Customer Reviews</h2>
-                <p style={{ color: '#6B6861', fontSize: '0.85rem', margin: '0.25rem 0 0' }}>
-                  Only verified customers who purchased this design file can post reviews. (Zero fake reviews)
-                </p>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span style={{ fontSize: '1.25rem', fontWeight: 800 }}>
-                  ★ {reviews.length > 0 ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1) : '5.0'}
-                </span>
-                <span style={{ fontSize: '0.85rem', color: '#6B6861' }}>({reviews.length} Verified Reviews)</span>
-              </div>
-            </div>
-
-            {/* Verified Buyer Review Form (Only for Users who purchased the product) */}
-            {eligibility.has_purchased ? (
-              <div style={{ background: '#FFFFFF', padding: '1.5rem', borderRadius: '12px', border: '1px solid #EAE8E2', marginBottom: '2rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                  <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 700 }}>
-                    {editingReviewId ? 'Edit Your Review' : 'Write a Verified Buyer Review'}
-                  </h4>
-                  {eligibility.already_reviewed && (
-                    <span style={{
-                      fontSize: '0.75rem',
-                      fontWeight: 700,
-                      padding: '0.25rem 0.6rem',
-                      borderRadius: 4,
-                      background: eligibility.can_edit ? '#ECFDF5' : '#FEE2E2',
-                      color: eligibility.can_edit ? '#059669' : '#DC2626'
-                    }}>
-                      {eligibility.can_edit ? `Editable (Locks in ~${eligibility.hours_left_to_edit || 24}h)` : 'Review Locked (24h Expired)'}
-                    </span>
-                  )}
-                </div>
-
-                {eligibility.already_reviewed && !eligibility.can_edit ? (
-                  <div style={{ padding: '0.75rem 1rem', background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: 8, fontSize: '0.85rem', color: '#4B5563' }}>
-                    Review period locked: Reviews can only be edited within 24 hours of purchase. Your review is permanently verified.
-                  </div>
-                ) : (
-                  <form onSubmit={handleSubmitReview}>
-                    <div style={{ marginBottom: '1rem' }}>
-                      <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '0.35rem' }}>
-                        Star Rating (1 to 5 Stars Only):
-                      </label>
-                      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <button
-                            key={star}
-                            type="button"
-                            onClick={() => setReviewRating(star)}
-                            style={{
-                              all: 'unset',
-                              cursor: 'pointer',
-                              fontSize: '1.5rem',
-                              color: star <= reviewRating ? '#0A0A0C' : '#D1D5DB',
-                              transition: 'transform 0.1s'
-                            }}
-                          >
-                            ★
-                          </button>
-                        ))}
-                        <span style={{ fontSize: '0.85rem', fontWeight: 700, marginLeft: '0.5rem' }}>{reviewRating} Stars</span>
-                      </div>
-                    </div>
-
-                    <div style={{ marginBottom: '1rem' }}>
-                      <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '0.35rem' }}>
-                        Review Feedback (Text Only - No Images / No Videos):
-                      </label>
-                      <textarea
-                        rows={3}
-                        required
-                        value={reviewComment}
-                        onChange={e => setReviewComment(e.target.value)}
-                        placeholder="Share your experience cutting this CAD file on CNC or 3D printing..."
-                        style={{
-                          width: '100%',
-                          padding: '0.75rem',
-                          borderRadius: '8px',
-                          border: '1px solid #ccc',
-                          boxSizing: 'border-box',
-                          fontFamily: 'inherit'
-                        }}
-                      />
-                    </div>
-
-                    {reviewMsg && (
-                      <div style={{ marginBottom: '0.75rem', fontSize: '0.8rem', color: '#059669', fontWeight: 700 }}>
-                        {reviewMsg}
-                      </div>
-                    )}
-
-                    <button
-                      type="submit"
-                      disabled={isSubmittingReview}
-                      style={{
-                        all: 'unset',
-                        cursor: 'pointer',
-                        padding: '0.65rem 1.5rem',
-                        background: '#0A0A0C',
-                        color: '#FAF9F6',
-                        borderRadius: '9999px',
-                        fontSize: '0.8rem',
-                        fontWeight: 700
-                      }}
-                    >
-                      {isSubmittingReview ? 'Submitting...' : editingReviewId ? 'Update Review' : 'Submit Review'}
-                    </button>
-                  </form>
-                )}
-              </div>
-            ) : (
-              <div style={{ background: '#FAF9F6', padding: '1.25rem', borderRadius: '10px', border: '1px dashed rgba(10,10,12,0.15)', marginBottom: '2rem', fontSize: '0.85rem', color: '#6B6861' }}>
-                {user ? (
-                  <span>Only customers who have purchased this CAD file are permitted to submit reviews. Purchase this item to share fabrication feedback.</span>
-                ) : (
-                  <span>
-                    <button
-                      type="button"
-                      onClick={onOpenLogin}
-                      style={{ all: 'unset', cursor: 'pointer', fontWeight: 700, color: '#0A0A0C', textDecoration: 'underline' }}
-                    >
-                      Log in
-                    </button>{' '}
-                    with the account you used to purchase this file to post or edit a review.
+          {/* Verified Buyer Review Form (Only for Users who purchased the product) */}
+          {eligibility.has_purchased ? (
+            <div style={{ background: '#FFFFFF', padding: '1.5rem', borderRadius: '12px', border: '1px solid #EAE8E2', marginBottom: '2rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 700 }}>
+                  {editingReviewId ? 'Edit Your Review' : 'Write a Verified Buyer Review'}
+                </h4>
+                {eligibility.already_reviewed && (
+                  <span style={{
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    padding: '0.25rem 0.6rem',
+                    borderRadius: 4,
+                    background: eligibility.can_edit ? '#ECFDF5' : '#FEE2E2',
+                    color: eligibility.can_edit ? '#059669' : '#DC2626'
+                  }}>
+                    {eligibility.can_edit ? `Editable (Locks in ~${eligibility.hours_left_to_edit || 24}h)` : 'Review Locked (24h Expired)'}
                   </span>
                 )}
               </div>
-            )}
 
-            {/* List of Reviews */}
-            {isLoadingReviews ? (
-              <div style={{ textAlign: 'center', padding: '2rem', color: '#6B6861' }}>Loading verified reviews...</div>
-            ) : reviews.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '2rem', color: '#6B6861', fontSize: '0.875rem' }}>
-                No customer reviews yet. Verified purchasers will share their production feedback here.
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                {reviews.map((r) => (
-                  <div key={r.id} style={{ background: '#FFFFFF', padding: '1.25rem', borderRadius: '10px', border: '1px solid #EAE8E2' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#0A0A0C', color: '#FAF9F6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.75rem' }}>
-                          {(r.user_name || 'C')[0].toUpperCase()}
-                        </div>
-                        <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>{r.user_name}</span>
-                        <span style={{ fontSize: '0.7rem', color: '#059669', background: '#ECFDF5', padding: '0.15rem 0.5rem', borderRadius: 4, fontWeight: 700 }}>
-                          ✓ Verified Purchase
-                        </span>
-                      </div>
-                      <div style={{ fontSize: '0.95rem', letterSpacing: '1px' }}>
-                        {'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}
-                      </div>
-                    </div>
-                    <p style={{ margin: '0.5rem 0', fontSize: '0.875rem', color: '#2B2A27', lineHeight: 1.5 }}>
-                      {r.comment}
-                    </p>
-                    <div style={{ fontSize: '0.72rem', color: '#9CA3AF' }}>
-                      Posted on {new Date(r.created_at).toLocaleDateString()}
+              {eligibility.already_reviewed && !eligibility.can_edit ? (
+                <div style={{ padding: '0.75rem 1rem', background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: 8, fontSize: '0.85rem', color: '#4B5563' }}>
+                  Review period locked: Reviews can only be edited within 24 hours of purchase. Your review is permanently verified.
+                </div>
+              ) : (
+                <form onSubmit={handleSubmitReview}>
+                  <div style={{ marginBottom: '1rem' }}>
+                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '0.35rem' }}>
+                      Star Rating (1 to 5 Stars Only):
+                    </label>
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setReviewRating(star)}
+                          style={{
+                            all: 'unset',
+                            cursor: 'pointer',
+                            fontSize: '1.5rem',
+                            color: star <= reviewRating ? '#0A0A0C' : '#D1D5DB',
+                            transition: 'transform 0.1s'
+                          }}
+                        >
+                          ★
+                        </button>
+                      ))}
+                      <span style={{ fontSize: '0.85rem', fontWeight: 700, marginLeft: '0.5rem' }}>{reviewRating} Stars</span>
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
-          </section>
+
+                  <div style={{ marginBottom: '1rem' }}>
+                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '0.35rem' }}>
+                      Review Feedback (Text Only - No Images / No Videos):
+                    </label>
+                    <textarea
+                      rows={3}
+                      required
+                      value={reviewComment}
+                      onChange={e => setReviewComment(e.target.value)}
+                      placeholder="Share your experience cutting this CAD file on CNC or 3D printing..."
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem',
+                        borderRadius: '8px',
+                        border: '1px solid #ccc',
+                        boxSizing: 'border-box',
+                        fontFamily: 'inherit'
+                      }}
+                    />
+                  </div>
+
+                  {reviewMsg && (
+                    <div style={{ marginBottom: '0.75rem', fontSize: '0.8rem', color: '#059669', fontWeight: 700 }}>
+                      {reviewMsg}
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={isSubmittingReview}
+                    style={{
+                      all: 'unset',
+                      cursor: 'pointer',
+                      padding: '0.65rem 1.5rem',
+                      background: '#0A0A0C',
+                      color: '#FAF9F6',
+                      borderRadius: '9999px',
+                      fontSize: '0.8rem',
+                      fontWeight: 700
+                    }}
+                  >
+                    {isSubmittingReview ? 'Submitting...' : editingReviewId ? 'Update Review' : 'Submit Review'}
+                  </button>
+                </form>
+              )}
+            </div>
+          ) : (
+            <div style={{ background: '#FAF9F6', padding: '1.25rem', borderRadius: '10px', border: '1px dashed rgba(10,10,12,0.15)', marginBottom: '2rem', fontSize: '0.85rem', color: '#6B6861' }}>
+              {user ? (
+                <span>Only customers who have purchased this CAD file are permitted to submit reviews. Purchase this item to share fabrication feedback.</span>
+              ) : (
+                <span>
+                  <button
+                    type="button"
+                    onClick={onOpenLogin}
+                    style={{ all: 'unset', cursor: 'pointer', fontWeight: 700, color: '#0A0A0C', textDecoration: 'underline' }}
+                  >
+                    Log in
+                  </button>{' '}
+                  with the account you used to purchase this file to post or edit a review.
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* List of Reviews */}
+          {isLoadingReviews ? (
+            <div style={{ textAlign: 'center', padding: '2rem', color: '#6B6861' }}>Loading verified reviews...</div>
+          ) : reviews.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '2rem', color: '#6B6861', fontSize: '0.875rem' }}>
+              No customer reviews yet. Verified purchasers will share their production feedback here.
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {reviews.map((r) => (
+                <div key={r.id} style={{ background: '#FFFFFF', padding: '1.25rem', borderRadius: '10px', border: '1px solid #EAE8E2' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#0A0A0C', color: '#FAF9F6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.75rem' }}>
+                        {(r.user_name || 'C')[0].toUpperCase()}
+                      </div>
+                      <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>{r.user_name}</span>
+                      <span style={{ fontSize: '0.7rem', color: '#059669', background: '#ECFDF5', padding: '0.15rem 0.5rem', borderRadius: 4, fontWeight: 700 }}>
+                        ✓ Verified Purchase
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '0.95rem', letterSpacing: '1px' }}>
+                      {'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}
+                    </div>
+                  </div>
+                  <p style={{ margin: '0.5rem 0', fontSize: '0.875rem', color: '#2B2A27', lineHeight: 1.5 }}>
+                    {r.comment}
+                  </p>
+                  <div style={{ fontSize: '0.72rem', color: '#9CA3AF' }}>
+                    Posted on {new Date(r.created_at).toLocaleDateString()}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
       </main>
 
       {/* Modal Lightbox for Full-Resolution Description Image Preview */}

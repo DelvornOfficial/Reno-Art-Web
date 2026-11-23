@@ -1,0 +1,182 @@
+.crm-subscriptions-page {
+  padding: 1.5rem;
+}
+
+.crm-sub-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.crm-sub-header h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0A0A0C;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.25rem;
+}
+
+.crm-sub-header p {
+  font-size: 0.875rem;
+  color: #6B6861;
+  max-width: 640px;
+}
+
+.crm-sub-save-btn {
+  background-color: #0A0A0C;
+  color: #FFFFFF;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(10, 10, 12, 0.15);
+  transition: all 0.2s ease;
+}
+
+.crm-sub-save-btn:hover {
+  background-color: #27272A;
+  transform: translateY(-1px);
+}
+
+.crm-tiers-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+  .crm-tiers-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.crm-tier-card {
+  background-color: #FFFFFF;
+  border: 1.5px solid rgba(10, 10, 12, 0.1);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 14px rgba(10, 10, 12, 0.03);
+  position: relative;
+}
+
+.crm-tier-card.featured {
+  border-color: #10B981;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.12);
+}
+
+.crm-tier-tag {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #6B6861;
+  background-color: #F4F4F5;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.crm-tier-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.65rem;
+}
+
+.crm-tier-input-group label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #4B5563;
+}
+
+.crm-tier-text-input {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: #0A0A0C;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.crm-tier-text-input:focus {
+  outline: none;
+  border-color: #0A0A0C;
+}
+
+.crm-tier-textarea {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  color: #0A0A0C;
+  font-family: inherit;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.crm-tier-pricing-settings {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  background-color: #F9FAFB;
+  padding: 0.85rem;
+  border-radius: 10px;
+  border: 1px solid #F3F4F6;
+  margin: 0.5rem 0;
+}
+
+.crm-tier-benefits-block {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid #F3F4F6;
+}
+
+.crm-add-benefit-btn {
+  background: none;
+  border: none;
+  color: #0095F6;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.crm-benefits-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.crm-benefit-item-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.crm-benefit-input {
+  flex: 1;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid #E5E7EB;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  color: #1F2937;
+  font-family: inherit;
+}
+
+.crm-benefit-remove-btn {
+  background: none;
+  border: none;
+  color: #EF4444;
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+}

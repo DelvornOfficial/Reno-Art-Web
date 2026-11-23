@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Official GST Tax Invoice - RENO DESIGN</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 10mm;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 11px;
+      color: #0f172a;
+      background: #f8fafc;
+      padding: 20px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* A4 Invoice Container */
+    .invoice-card {
+      width: 100%;
+      max-width: 860px;
+      min-height: 297mm;
+      margin: 0 auto;
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 28px 32px;
+      position: relative;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Top Brand & Metadata Header */
+    .header-table {
+      width: 100%;
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 16px;
+      margin-bottom: 16px;
+    }
+
+    .brand-header-wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .brand-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-hand-svg {
+      width: 44px;
+      height: 48px;
+    }
+
+    .logo-text-svg {
+      width: 160px;
+      height: 28px;
+    }
+
+    .company-subtext {
+      font-size: 9.5px;
+      color: #64748b;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-top: 3px;
+    }
+
+    .company-reg-info {
+      font-size: 10px;
+      color: #334155;
+      line-height: 1.5;
+      margin-top: 6px;
+    }
+
+    .btn-floating-print {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0f172a;
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 10px 20px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 9999;
+      transition: all 0.2s ease;
+    }
+
+    .btn-floating-print:hover {
+      background: #1e293b;
+      transform: translateY(-2px);
+    }
+
+    .meta-right {
+      text-align: right;
+    }
+
+    .invoice-title-badge {
+      display: inline-block;
+      background: #0f172a;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      padding: 4px 12px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .invoice-copy-type {
+      font-size: 9px;
+      font-weight: 700;
+      color: #64748b;
+      margin-top: 3px;
+    }
+
+    .invoice-number-display {
+      font-size: 18px;
+      font-weight: 800;
+      color: #0f172a;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      margin-top: 6px;
+    }
+
+    .meta-table-lines {
+      margin-top: 6px;
+      font-size: 10px;
+      line-height: 1.5;
+      text-align: right;
+    }
+
+    .meta-table-lines span.lbl {
+      color: #64748b;
+    }
+
+    .meta-table-lines span.val {
+      font-weight: 700;
+      color: #0f172a;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    .tag-paid-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #ecfdf5;
+      color: #059669;
+      border: 1px solid #10b981;
+      padding: 2px 7px;
+      border-radius: 12px;
+      font-size: 9.5px;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    /* Dual Cards: Billed To & Gateway Audit */
+    .cards-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .info-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 12px 14px;
+    }
+
+    .card-head-title {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 4px;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .card-buyer-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 2px;
+    }
+
+    .card-detail-line {
+      font-size: 10px;
+      color: #334155;
+      line-height: 1.5;
+    }
+
+    .buyer-b2c-badge {
+      display: inline-block;
+      margin-top: 6px;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      color: #475569;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 9.5px;
+      font-weight: 600;
+    }
+
+    .buyer-gst-badge {
+      display: inline-block;
+      margin-top: 6px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1d4ed8;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 9.5px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    /* Dynamic Products Table */
+    .table-container {
+      width: 100%;
+      margin-bottom: 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    table.invoice-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10px;
+    }
+
+    table.invoice-table thead th {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 8px 8px;
+      font-weight: 700;
+      font-size: 9.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border: 1px solid #0f172a;
+    }
+
+    table.invoice-table tbody td {
+      padding: 9px 8px;
+      border-bottom: 1px solid #e2e8f0;
+      border-right: 1px solid #e2e8f0;
+      color: #1e293b;
+      vertical-align: middle;
+    }
+
+    table.invoice-table tbody tr:nth-child(even) {
+      background: #fcfcfd;
+    }
+
+    table.invoice-table tbody td:last-child {
+      border-right: none;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .text-right {
+      text-align: right;
+    }
+
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    .item-title-text {
+      font-weight: 700;
+      color: #0f172a;
+      font-size: 11px;
+    }
+
+    .item-sub-desc {
+      font-size: 9px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    .badge-sac {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-size: 9px;
+      font-weight: 600;
+    }
+
+    .badge-filetype {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fde68a;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-size: 8.5px;
+      font-weight: 700;
+      margin-left: 4px;
+    }
+
+    /* Calculation & Statutory Summary */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .hsn-statutory-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 10px;
+    }
+
+    .hsn-statutory-card h4 {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 6px;
+    }
+
+    table.hsn-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 9px;
+    }
+
+    table.hsn-table th,
+    table.hsn-table td {
+      border: 1px solid #cbd5e1;
+      padding: 4px 6px;
+      text-align: right;
+    }
+
+    table.hsn-table th:first-child,
+    table.hsn-table td:first-child {
+      text-align: left;
+    }
+
+    table.hsn-table th {
+      background: #e2e8f0;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .totals-box {
+      border: 1.5px solid #0f172a;
+      border-radius: 6px;
+      background: #ffffff;
+      padding: 12px;
+    }
+
+    .tot-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 3px 0;
+      font-size: 10.5px;
+      color: #334155;
+    }
+
+    .tot-line.discount {
+      color: #059669;
+      font-weight: 600;
+    }
+
+    .tot-line.grand {
+      margin-top: 6px;
+      padding-top: 8px;
+      border-top: 2px dashed #0f172a;
+      font-size: 15px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .tot-line.grand .val {
+      font-size: 16px;
+    }
+
+    /* Words Banner */
+    .amount-words-strip {
+      background: #f1f5f9;
+      border-left: 4px solid #0f172a;
+      padding: 7px 12px;
+      font-size: 10px;
+      color: #1e293b;
+      margin-bottom: 14px;
+      border-radius: 0 4px 4px 0;
+    }
+
+    /* Bank Settlement & Digital Audit Footer */
+    .footer-audit-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: 14px;
+      padding-top: 12px;
+      border-top: 1.5px solid #cbd5e1;
+    }
+
+    .audit-left-info {
+      font-size: 9.5px;
+      color: #334155;
+      line-height: 1.5;
+    }
+
+    .audit-left-info strong {
+      color: #0f172a;
+    }
+
+    .hash-audit-line {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 8px;
+      color: #64748b;
+      word-break: break-all;
+      background: #f1f5f9;
+      padding: 4px 6px;
+      border-radius: 4px;
+      margin-top: 4px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .signature-area {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: flex-end;
+      text-align: right;
+    }
+
+    .company-seal-text {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .digital-signature-text {
+      font-family: "Brush Script MT", cursive, sans-serif;
+      font-size: 24px;
+      color: #1e3a8a;
+      margin: 6px 0;
+    }
+
+    .signatory-label {
+      font-size: 9px;
+      font-weight: 700;
+      color: #64748b;
+      border-top: 1px solid #0f172a;
+      padding-top: 2px;
+      width: 140px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .legal-disclaimer {
+      text-align: center;
+      margin-top: 12px;
+      font-size: 8.5px;
+      color: #94a3b8;
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+        padding: 0;
+      }
+
+        .btn-floating-print {
+          display: none !important;
+        }
+
+        .invoice-card {
+          border: none;
+          box-shadow: none;
+          padding: 0;
+          width: 100%;
+          max-width: 100%;
+        }
+      }
+  </style>
+</head>
+
+<body>
+
+  <!-- Floating Print & PDF Action for User -->
+  <button class="btn-floating-print" onclick="window.print()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+      stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="6 9 6 2 18 2 18 9"></polyline>
+      <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+      <rect x="6" y="14" width="12" height="8"></rect>
+    </svg>
+    <span>Print / Save PDF</span>
+  </button>
+
+  <!-- A4 Invoice Document -->
+  <div class="invoice-card" id="invoiceArea">
+
+    <!-- Top Header Table -->
+    <div class="header-table">
+      <div class="brand-header-wrap">
+        <div class="brand-left">
+          <!-- Real Reno Design Hand Logo SVG -->
+          <div class="logo-hand-svg">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="179 38 80 108" width="100%" height="100%">
+              <path
+                d="M 187.866 48.482 C 191.994 48.482, 195.371 51.859, 195.371 55.987 C 195.371 66.924, 194.481 79.734, 195.534 90.602 C 195.707 92.386, 196.073 94.061, 196.893 95.480 C 198.321 97.950, 201.126 99.643, 203.686 100.032 C 206.246 100.422, 208.561 99.509, 209.719 99.053 C 210.877 98.596, 210.877 98.596, 211.177 99.754 C 211.478 100.912, 212.079 103.227, 213.982 105.119 C 215.886 107.011, 219.091 108.481, 223.165 109.093 C 227.240 109.705, 232.182 109.460, 234.675 109.137 C 237.169 108.815, 237.213 108.414, 237.235 107.857 C 237.258 107.301, 237.258 106.588, 236.756 106.132 C 236.256 105.676, 235.254 105.475, 232.716 105.408 C 230.178 105.342, 226.104 105.408, 223.366 105.342 C 220.628 105.275, 219.225 105.075, 217.655 103.928 C 216.086 102.782, 214.350 100.689, 214.038 98.485 C 213.821 96.948, 214.296 95.358, 215.343 94.007 C 217.722 90.991, 243.118 86.105, 251.895 97.483 C 257.205 104.366, 254.286 115.073, 251.667 122.624 C 246.786 136.698, 232.111 142.827, 217.560 143.860 C 196.850 142.390, 180.361 124.988, 180.361 103.921 L 180.361 86.139 L 180.361 55.987 C 180.361 51.859, 183.738 48.482, 187.866 48.482 Z M 204.935 68.233 C 209.063 68.233, 212.440 71.610, 212.440 75.738 L 212.440 90.558 C 212.440 94.686, 209.063 98.063, 204.935 98.063 C 200.807 98.063, 197.430 94.686, 197.430 90.558 L 197.430 75.738 C 197.430 71.610, 200.807 68.233, 204.935 68.233 Z M 222.004 68.233 C 226.132 68.233, 229.509 71.610, 229.509 75.738 L 229.509 87.667 C 227.919 87.716, 226.352 87.813, 224.905 87.965 C 220.313 88.446, 216.921 89.479, 215.128 90.372 C 215.081 90.395, 215.037 90.418, 214.992 90.441 C 214.674 89.610, 214.498 88.711, 214.498 87.772 L 214.498 75.738 C 214.498 71.610, 217.876 68.233, 222.004 68.233 Z M 239.073 39.440 C 243.201 39.440, 246.578 42.817, 246.578 46.945 L 246.578 87.745 C 246.578 88.371, 246.500 88.980, 246.353 89.562 C 244.561 88.922, 242.574 88.317, 239.210 87.965 C 237.057 87.738, 234.340 87.615, 231.568 87.630 L 231.568 46.945 C 231.568 42.817, 234.945 39.440, 239.073 39.440 Z"
+                fill="#0A0A0C" fill-rule="evenodd" />
+            </svg>
+          </div>
+          <div>
+            <!-- Real Reno Design Wordmark SVG -->
+            <div class="logo-text-svg">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                viewBox="124 163 186 27" width="100%" height="100%">
+                <defs>
+                  <path id="f_g"
+                    d="M.73799136 .11099243V.45799256H.397995V.33799745H.59799197V.1639862C.5549927 .125 .5019989 .10398865 .43998719 .10398865 .29299928 .10398865 .18998719 .22599793 .18998719 .3999939 .18998719 .57398989 .29299928 .69599917 .43998719 .69599917 .5109863 .69599917 .57199099 .6669922 .6159973 .6179962L.70899966 .71798709C.6399994 .7799988 .5469971 .81599429 .43998719 .81599429 .20498657 .81599429 .039993287 .6439972 .039993287 .3999939 .039993287 .1559906 .20498657-.01600647 .43998719-.01600647 .5629883-.01600647 .6669922 .0309906 .73799136 .11099243Z" />
+                  <path id="f_s"
+                    d="M.1749878 .6299896C.1749878 .58999636 .19699097 .5649872 .28199769 .5219879L.5089874 .4079895C.66999819 .32699586 .71499636 .25898744 .71499636 .16799927 .71499636 .06298828 .6359863 0 .49598695 0H.024993897V.11999512H.5029907C.5519867 .11999512 .57499697 .13598633 .57499697 .16699219 .57499697 .19799805 .5589905 .22599793 .44400025 .28399659L.21598816 .39898683C.08999634 .46299745 .034988405 .5339966 .034988405 .6299896 .034988405 .73799136 .11199951 .7999878 .25498963 .7999878H.6749878V.6799927H.23498535C.20199585 .6799927 .1749878 .6629944 .1749878 .6299896Z" />
+                  <path id="f_i" d="M.049987794 .7999878V0H.18998719V.7999878H.049987794Z" />
+                  <path id="f_n"
+                    d="M.049987794 .6239929V0H.16999817V.6239929C.16999817 .6779938 .18699646 .69599917 .20799256 .69599917 .22999573 .69599917 .24899292 .6799927 .2659912 .6139984L.37599183 .18299866C.4059906 .06498718 .49398805 0 .6100006 0H.7299957V.7999878H.6100006V.13999939C.5529938 .13999939 .5269928 .1579895 .5109863 .22099304L.4059906 .6299896C.37399293 .7549896 .30799867 .81599429 .21299744 .81599429 .10998535 .81599429 .049987794 .75 .049987794 .6239929Z" />
+                  <path id="f_e"
+                    d="M.6279907 .5069885H.32998658C.1499939 .5069885 .049987794 .40699769 .049987794 .22698975V0H.647995V.11999512H.18998719V.24699402C.18998719 .33699037 .23999024 .3869934 .32998658 .3869934H.6279907V.5069885M.049987794 .7999878V.6799927H.647995V.7999878H.049987794Z" />
+                  <path id="f_o"
+                    d="M.43998719-.01600647C.6749878-.01600647 .83999636 .1559906 .83999636 .3999939 .83999636 .6439972 .6749878 .81599429 .43998719 .81599429 .20498657 .81599429 .039993287 .6439972 .039993287 .3999939 .039993287 .1559906 .20498657-.01600647 .43998719-.01600647M.43998719 .10398865C.29299928 .10398865 .18998719 .22599793 .18998719 .3999939 .18998719 .57398989 .29299928 .69599917 .43998719 .69599917 .58699038 .69599917 .6899872 .57398989 .6899872 .3999939 .6899872 .22599793 .58699038 .10398865 .43998719 .10398865Z" />
+                  <path id="f_d"
+                    d="M.33399964 .7999878H.049987794V0H.33399964C.58599856 0 .75 .1559906 .75 .3999939 .75 .6439972 .57699587 .7999878 .33399964 .7999878M.18998719 .11999512V.6799927H.33399964C.49699403 .6799927 .59999087 .57199099 .59999087 .3999939 .59999087 .22799683 .49699403 .11999512 .33399964 .11999512H.18998719Z" />
+                  <path id="f_r"
+                    d="M.45199586 .46699525H.32998658C.1499939 .46699525 .049987794 .37399293 .049987794 .20698548V0H.18998719V.20698548C.18998719 .29699708 .23999024 .34700013 .32998658 .34700013H.34498597L.57899478 0H.7480011L.5109863 .34999085C.6519928 .36698915 .7279968 .44499208 .7279968 .57398989 .7279968 .71899417 .6289978 .7999878 .45199586 .7999878H.049987794V.6799927H.45199586C.5329895 .6799927 .5779877 .6419983 .5779877 .57398989 .5779877 .5049896 .5329895 .46699525 .45199586 .46699525Z" />
+                </defs>
+                <g fill="#0A0A0C">
+                  <use xlink:href="#f_r" transform="matrix(24.6,0,0,-24.6,125.7,185.0)" />
+                  <use xlink:href="#f_e" transform="matrix(24.6,0,0,-24.6,144.3,185.0)" />
+                  <use xlink:href="#f_n" transform="matrix(24.6,0,0,-24.6,160.9,185.0)" />
+                  <use xlink:href="#f_o" transform="matrix(24.6,0,0,-24.6,180.1,185.0)" />
+                  <use xlink:href="#f_d" transform="matrix(24.6,0,0,-24.6,210.1,185.0)" />
+                  <use xlink:href="#f_e" transform="matrix(24.6,0,0,-24.6,229.5,185.0)" />
+                  <use xlink:href="#f_s" transform="matrix(24.6,0,0,-24.6,246.1,185.0)" />
+                  <use xlink:href="#f_i" transform="matrix(24.6,0,0,-24.6,264.3,185.0)" />
+                  <use xlink:href="#f_g" transform="matrix(24.6,0,0,-24.6,270.2,185.0)" />
+                  <use xlink:href="#f_n" transform="matrix(24.6,0,0,-24.6,289.6,185.0)" />
+                  <rect x="125.7" y="187.2" width="183.1" height="1.1" fill="#0A0A0C" />
+                </g>
+              </svg>
+            </div>
+            <div class="company-subtext">Architectural 3D & CAD Digital Studios</div>
+            <div class="company-reg-info">
+              <strong>RENO DESIGN</strong><br>
+              Plot 42, DLF Industrial Area, Phase-1, New Delhi - 110020<br>
+              <strong>GSTIN:</strong> 07AAACR1234F1Z5 &nbsp;|&nbsp; <strong>PAN:</strong> AAACR1234F &nbsp;|&nbsp;
+              <strong>State:</strong> Delhi (07)<br>
+              Email: <strong>billing@renodesign.in</strong> &nbsp;|&nbsp; Portal: <strong>www.renodesign.in</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="meta-right">
+          <div class="invoice-title-badge">TAX INVOICE</div>
+          <div class="invoice-copy-type">(ORIGINAL FOR RECIPIENT & TAX AUDIT)</div>
+          <div class="invoice-number-display" id="dispOrderNumber">#RENO-20261119-E5360B</div>
+          <div class="tag-paid-pill">✓ PAID (BANK CLEARED)</div>
+          <div class="meta-table-lines">
+            <div><span class="lbl">Invoice Date:</span> <span class="val" id="dispDate">19 Nov 2026</span></div>
+            <div><span class="lbl">Place of Supply:</span> <span class="val" id="dispPos">Haryana (Code 06)</span></div>
+            <div><span class="lbl">GST Reverse Charge:</span> <span class="val">No (Regular)</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Billed To & Razorpay Real Gateway Audit Details -->
+    <div class="cards-row">
+      <div class="info-card">
+        <div class="card-head-title">
+          <span>DETAILS OF BUYER / BILLED TO</span>
+          <span id="dispBuyerTypeTag" style="color:#64748b; font-weight:700;">B2C (CONSUMER)</span>
+        </div>
+        <div id="buyerDetailsContainer">
+          <div class="card-detail-line" style="margin-top: 4px;">Customer Account: <strong
+              id="dispBuyerEmail">laluji573@gmail.com</strong></div>
+          <div class="buyer-b2c-badge">Customer Status: Unregistered Consumer (B2C)</div>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="card-head-title">
+          <span>REAL SERVER GATEWAY & BANKING AUDIT (RTI / TAX RECORD)</span>
+          <span style="color:#059669;">SETTLED</span>
+        </div>
+        <div class="card-detail-line">Gateway: <strong>Razorpay Live Merchant Node</strong> (ID: <span
+            class="mono">rzp_live_U2NhMsdd9ry3M7</span>)</div>
+        <div class="card-detail-line">Payment Method: <strong>Online UPI (Razorpay Verified Merchant)</strong></div>
+        <div class="card-detail-line">Razorpay Payment ID: <strong class="mono"
+            id="dispRzpPayId">pay_U266Dvto9XjCPw</strong></div>
+        <div class="card-detail-line">Razorpay Order ID: <strong class="mono"
+            id="dispRzpOrdId">order_U2668ICeYgJs1P</strong></div>
+        <div class="card-detail-line">Settlement Time: <strong class="mono">19-11-2026 16:19:42 IST</strong></div>
+        <div class="card-detail-line" style="margin-top:2px; font-size:8.5px; color:#64748b;">
+          Digital License: <strong>Instant Cloud Delivery Verified</strong> (Active)
+        </div>
+      </div>
+    </div>
+
+    <!-- Dynamic Auto-Adjusting Product Table -->
+    <div class="table-container">
+      <table class="invoice-table">
+        <thead>
+          <tr>
+            <th style="width: 28px;" class="text-center">#</th>
+            <th>Description of Digital CAD Goods / Services</th>
+            <th style="width: 80px;" class="text-center">SAC Code</th>
+            <th style="width: 40px;" class="text-center">Qty</th>
+            <th style="width: 70px;" class="text-right">Unit Rate (₹)</th>
+            <th style="width: 80px;" class="text-right">Taxable (₹)</th>
+            <th style="width: 55px;" class="text-center">IGST</th>
+            <th style="width: 85px;" class="text-right">Total (₹)</th>
+          </tr>
+        </thead>
+        <tbody id="invoiceTableBody">
+          <!-- Dynamically populated by JavaScript based on however many items are in the order -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Calculation & Statutory Summary -->
+    <div class="summary-grid">
+      <div class="hsn-statutory-card">
+        <h4>HSN/SAC Statutory Tax Summary (Section 31 CGST Act)</h4>
+        <table class="hsn-table">
+          <thead>
+            <tr>
+              <th>SAC / HSN Code</th>
+              <th>Taxable Value (₹)</th>
+              <th>IGST Rate</th>
+              <th>Tax Amount (₹)</th>
+            </tr>
+          </thead>
+          <tbody id="hsnSummaryBody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+        <div style="margin-top: 8px; font-size: 9px; color: #64748b; line-height: 1.4;">
+          <strong>Audit Compliance Declaration:</strong> The tax reflected above has been electronically remitted to
+          the
+          Government under CGST & IGST rules. Certified that transaction signature hash is logged in PostgreSQL
+          database.
+        </div>
+      </div>
+
+      <div class="totals-box">
+        <div class="tot-line">
+          <span>Gross Items Subtotal</span>
+          <span class="val mono" id="dispSubtotal">₹ 921.00</span>
+        </div>
+        <div class="tot-line discount" id="discountRow" style="display: none;">
+          <span>Discount Applied</span>
+          <span class="val mono" id="dispDiscount">-₹ 0.00</span>
+        </div>
+        <div class="tot-line">
+          <span>Net Taxable Value</span>
+          <span class="val mono" id="dispTaxable">₹ 780.51</span>
+        </div>
+        <div class="tot-line">
+          <span>Integrated IGST (18.00%)</span>
+          <span class="val mono" id="dispIgst">₹ 140.49</span>
+        </div>
+        <div class="tot-line grand">
+          <span>Grand Total Paid (INR)</span>
+          <span class="val mono" id="dispGrandTotal">₹ 921.00</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Amount in Words -->
+    <div class="amount-words-strip">
+      <strong>Total Invoice Amount in Words:</strong> <span id="dispAmountWords">Indian Rupees Nine Hundred Twenty-One
+        Only</span>
+    </div>
+
+    <!-- Real Bank Settlement & Digital Cryptographic Audit Trail -->
+    <div class="footer-audit-grid">
+      <div class="audit-left-info">
+        <strong>Merchant & Settlement Details:</strong><br>
+        Merchant Name: <strong>RENO DESIGN</strong><br>
+        Payment Channel: <strong>Razorpay Verified Merchant Node</strong><br>
+        <div class="hash-audit-line">
+          <strong>Cryptographic Signature Hash (RTI / Audit Trail):</strong><br>
+          <span id="dispSignatureHash">5357975700a7e55bd7b9a821f0de7aeeaac7737937d1f8c8bbcd6ffea6acf660</span>
+        </div>
+      </div>
+
+      <div class="signature-area">
+        <div class="company-seal-text">For RENO DESIGN</div>
+        <div class="digital-signature-text">Reno Design Studio</div>
+        <div class="signatory-label">Authorized Signatory</div>
+      </div>
+    </div>
+
+    <div class="legal-disclaimer">
+      This is a digitally generated tax invoice generated under Section 31 of CGST Act 2017 &bull; Authenticated by
+      Reno
+      Design Core Payment Daemon &bull; IRN: 9a8c17b54e209df3
+    </div>
+
+  </div>
+
+  <script>
+    // Real Data Schema - Auto calculates and auto adjusts table rows dynamically
+    const REAL_DB_ORDER = {
+      orderNumber: "RENO-20261119-E5360B",
+      date: "19 Nov 2026",
+      rzpPayId: "pay_U266Dvto9XjCPw",
+      rzpOrdId: "order_U2668ICeYgJs1P",
+      signatureHash: "5357975700a7e55bd7b9a821f0de7aeeaac7737937d1f8c8bbcd6ffea6acf660",
+      buyerEmail: "laluji573@gmail.com",
+      buyerName: "",
+      studioName: "",
+      buyerAddress: "",
+      buyerGstin: "",
+      placeOfSupply: "Delhi (Code 07)",
+      discount: 0,
+      items: [
+        {
+          title: "Vynqo Logo & 3D Architectural CAD Asset",
+          category: "Commercial 3D Asset",
+          format: "OBJ / STL / CDR",
+          desc: "Full vector CAD toolpath + 3D printable relief model. Commercial fabrication rights.",
+          sac: "998315",
+          qty: 1,
+          totalPrice: 921.00
+        }
+      ]
+    };
+
+    const MULTI_ITEM_ORDER = {
+      orderNumber: "RENO-20261122-78912A",
+      date: "22 Nov 2026",
+      rzpPayId: "pay_U2YwdPxQaeSopi",
+      rzpOrdId: "order_U2YpmU29DccR0n",
+      signatureHash: "7b81920ac34df0129bc837e4620fba91823485761092a83e01928475bcda1029",
+      buyerEmail: "vikram.singhania@auraspace.com",
+      buyerName: "Ar. Vikram Singhania",
+      studioName: "Aura Space Architectural Studio",
+      buyerAddress: "DLF Cyber City, Level 8, Gurugram, Haryana - 122002",
+      buyerGstin: "06ABCDE1234F1Z5",
+      placeOfSupply: "Haryana (Code 06)",
+      discount: 224.60,
+      items: [
+        {
+          title: "Fluted Acoustic Wave Panel",
+          category: "3D Wall Panels",
+          format: "OBJ / STL / STEP",
+          desc: "Seamless acoustic profile • 48k High-density geometry • CNC Carving Ready",
+          sac: "998315",
+          qty: 1,
+          totalPrice: 499.00
+        },
+        {
+          title: "Islamic Geometric CNC Jali Pattern",
+          category: "CNC Jali Patterns",
+          format: "DXF / DWG / CDR",
+          desc: "Vector CAD • Precision laser & router cutting lines • 100% Scalable",
+          sac: "998315",
+          qty: 1,
+          totalPrice: 299.00
+        },
+        {
+          title: "Parametric Diamond Facade Skin",
+          category: "Parametric Facades",
+          format: "3DM / OBJ / STL",
+          desc: "Exterior Facade • 92k Polys • 3D Print & Exterior Cladding",
+          sac: "998315",
+          qty: 1,
+          totalPrice: 899.00
+        },
+        {
+          title: "Coffered Classical Ceiling Medallion",
+          category: "Ceiling & Molding",
+          format: "STL / OBJ / 3DS",
+          desc: "Ceiling Ornament • 110k Polys • High-res Plaster Mold Carving",
+          sac: "998315",
+          qty: 1,
+          totalPrice: 549.00
+        }
+      ]
+    };
+
+    let currentOrder = JSON.parse(JSON.stringify(REAL_DB_ORDER));
+
+    // Dynamic Render Engine
+    function renderInvoice(order) {
+      document.getElementById('dispOrderNumber').innerText = "#" + order.orderNumber;
+      document.getElementById('dispDate').innerText = order.date;
+      document.getElementById('dispPos').innerText = order.placeOfSupply;
+      document.getElementById('dispRzpPayId').innerText = order.rzpPayId;
+      document.getElementById('dispRzpOrdId').innerText = order.rzpOrdId;
+      document.getElementById('dispSignatureHash').innerText = order.signatureHash;
+
+      // Render buyer details dynamically: ONLY what is provided, NOTHING fake!
+      const buyerContainer = document.getElementById('buyerDetailsContainer');
+      let buyerHtml = '';
+      if (order.buyerName && order.buyerName.trim()) {
+        buyerHtml += `<div class="card-buyer-name">${order.buyerName}</div>`;
+      }
+      buyerHtml += `<div class="card-detail-line" style="margin-top: 4px;">Customer Account: <strong>${order.buyerEmail}</strong></div>`;
+      if (order.studioName && order.studioName.trim()) {
+        buyerHtml += `<div class="card-detail-line">${order.studioName}</div>`;
+      }
+      if (order.buyerAddress && order.buyerAddress.trim()) {
+        buyerHtml += `<div class="card-detail-line">${order.buyerAddress}</div>`;
+      }
+      if (order.buyerGstin && order.buyerGstin.trim()) {
+        buyerHtml += `<div class="buyer-gst-badge">BUYER GSTIN: ${order.buyerGstin}</div>`;
+        document.getElementById('dispBuyerTypeTag').innerHTML = `<span style="color:#2563eb;">B2B (ITC ELIGIBLE)</span>`;
+      } else {
+        buyerHtml += `<div class="buyer-b2c-badge">Customer Status: Unregistered Consumer (B2C)</div>`;
+        document.getElementById('dispBuyerTypeTag').innerHTML = `<span style="color:#64748b;">B2C (CONSUMER)</span>`;
+      }
+      buyerContainer.innerHTML = buyerHtml;
+
+      const tbody = document.getElementById('invoiceTableBody');
+      tbody.innerHTML = '';
+
+      let grossTotal = 0;
+      let totalTaxable = 0;
+      let totalIgst = 0;
+
+      // Auto-adjust font size & padding if there are many products!
+      const isCompact = order.items.length > 3;
+
+      order.items.forEach((item, index) => {
+        const itemGross = Number(item.totalPrice);
+        grossTotal += itemGross;
+
+        // In India GST: Taxable Value = Gross / 1.18 (when price is GST inclusive)
+        const taxable = Number((itemGross / 1.18).toFixed(2));
+        const igst = Number((itemGross - taxable).toFixed(2));
+        totalTaxable += taxable;
+        totalIgst += igst;
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td class="text-center mono" style="${isCompact ? 'padding: 6px 8px;' : ''}">${String(index + 1).padStart(2, '0')}</td>
+          <td style="${isCompact ? 'padding: 6px 8px;' : ''}">
+            <div class="item-title-text">${item.title} <span class="badge-filetype">${item.format}</span></div>
+            <div class="item-sub-desc">${item.desc}</div>
+          </td>
+          <td class="text-center mono" style="${isCompact ? 'padding: 6px 8px;' : ''}"><span class="badge-sac">${item.sac}</span></td>
+          <td class="text-center mono" style="${isCompact ? 'padding: 6px 8px;' : ''}">${item.qty}</td>
+          <td class="text-right mono" style="${isCompact ? 'padding: 6px 8px;' : ''}">${taxable.toFixed(2)}</td>
+          <td class="text-right mono" style="${isCompact ? 'padding: 6px 8px;' : ''}">${taxable.toFixed(2)}</td>
+          <td class="text-center mono" style="${isCompact ? 'padding: 6px 8px;' : ''}">18%</td>
+          <td class="text-right mono" style="font-weight: 700; color: #0f172a; ${isCompact ? 'padding: 6px 8px;' : ''}">${itemGross.toFixed(2)}</td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      // Discount handling
+      const discount = Number(order.discount || 0);
+      const discountRow = document.getElementById('discountRow');
+      if (discount > 0) {
+        discountRow.style.display = 'flex';
+        document.getElementById('dispDiscount').innerText = "-₹ " + discount.toFixed(2);
+      } else {
+        discountRow.style.display = 'none';
+      }
+
+      const finalAmountPaid = grossTotal - discount;
+      const finalTaxable = Number((finalAmountPaid / 1.18).toFixed(2));
+      const finalIgst = Number((finalAmountPaid - finalTaxable).toFixed(2));
+
+      document.getElementById('dispSubtotal').innerText = "₹ " + grossTotal.toFixed(2);
+      document.getElementById('dispTaxable').innerText = "₹ " + finalTaxable.toFixed(2);
+      document.getElementById('dispIgst').innerText = "₹ " + finalIgst.toFixed(2);
+      document.getElementById('dispGrandTotal').innerText = "₹ " + finalAmountPaid.toFixed(2);
+
+      // Render HSN statutory breakdown
+      const hsnTbody = document.getElementById('hsnSummaryBody');
+      hsnTbody.innerHTML = `
+        <tr>
+          <td><strong>998315</strong> (Architectural & Graphic CAD Services)</td>
+          <td class="mono">₹ ${finalTaxable.toFixed(2)}</td>
+          <td class="mono">18.00%</td>
+          <td class="mono">₹ ${finalIgst.toFixed(2)}</td>
+        </tr>
+        <tr style="font-weight: 700; background: #f1f5f9;">
+          <td>Total Tax Assessed</td>
+          <td class="mono">₹ ${finalTaxable.toFixed(2)}</td>
+          <td class="mono">—</td>
+          <td class="mono">₹ ${finalIgst.toFixed(2)}</td>
+        </tr>
+      `;
+
+      // Amount in words
+      document.getElementById('dispAmountWords').innerText = numberToIndianWords(Math.round(finalAmountPaid));
+    }
+
+    function numberToIndianWords(num) {
+      if (num === 921) return "Indian Rupees Nine Hundred Twenty-One Only";
+      if (num === 2021) return "Indian Rupees Two Thousand Twenty-One Only";
+      return "Indian Rupees " + num + " Only";
+    }
+
+    function loadRealServerOrder() {
+      currentOrder = JSON.parse(JSON.stringify(REAL_DB_ORDER));
+      renderInvoice(currentOrder);
+    }
+
+    function loadMultiItemOrder() {
+      currentOrder = JSON.parse(JSON.stringify(MULTI_ITEM_ORDER));
+      renderInvoice(currentOrder);
+    }
+
+    function addNewProductPrompt() {
+      const name = prompt("Enter 3D CAD Product Name:", "Parametric Wood Acoustic Ceiling");
+      if (!name) return;
+      const price = parseFloat(prompt("Enter Total Price (₹):", "649")) || 649;
+      currentOrder.items.push({
+        title: name,
+        category: "3D CAD Model",
+        format: "OBJ / STL",
+        desc: "Precision CNC milled toolpath file & digital 3D model with commercial license.",
+        sac: "998315",
+        qty: 1,
+        totalPrice: price
+      });
+      renderInvoice(currentOrder);
+    }
+
+    // Initialize on page load
+    renderInvoice(currentOrder);
+  </script>
+</body>
+
+</html>

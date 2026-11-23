@@ -5,7 +5,7 @@ from sqlalchemy.future import select
 from sqlalchemy import func
 from app.core.database import get_db
 from app.core.ws import manager
-from app.models.models import Product, OrderItem
+from app.models.models import Product, OrderItem, MediaGallery
 from app.schemas.schemas import ProductOut, ProductUpdate
 
 router = APIRouter(prefix="/products", tags=["Products Catalog"])
@@ -131,6 +131,26 @@ async def create_new_product(
         is_published=True
     )
     db.add(new_product)
+
+    # Automatically archive uploaded product images & description renders in MediaGallery
+    try:
+        if new_product.image_url and new_product.image_url.strip():
+            db.add(MediaGallery(
+                title=f"{new_product.title} - Main Image",
+                url=new_product.image_url,
+                media_type="product_image"
+            ))
+        if new_product.gallery_images and isinstance(new_product.gallery_images, list):
+            for idx, g_img in enumerate(new_product.gallery_images):
+                if g_img and g_img.strip():
+                    db.add(MediaGallery(
+                        title=f"{new_product.title} - Description Render #{idx+1}",
+                        url=g_img,
+                        media_type="description_image"
+                    ))
+    except Exception:
+        pass
+
     await db.commit()
     await db.refresh(new_product)
 
@@ -179,6 +199,25 @@ async def update_existing_product(
     update_data = prod_update.model_dump(exclude_unset=True)
     for field, value in update_data.items():
         setattr(product, field, value)
+
+    # Automatically archive updated images into Central Media Gallery
+    try:
+        if "image_url" in update_data and update_data["image_url"]:
+            db.add(MediaGallery(
+                title=f"{product.title} - Main Image (Updated)",
+                url=update_data["image_url"],
+                media_type="product_image"
+            ))
+        if "gallery_images" in update_data and isinstance(update_data["gallery_images"], list):
+            for idx, g_img in enumerate(update_data["gallery_images"]):
+                if g_img and g_img.strip():
+                    db.add(MediaGallery(
+                        title=f"{product.title} - Description Render #{idx+1}",
+                        url=g_img,
+                        media_type="description_image"
+                    ))
+    except Exception:
+        pass
 
     await db.commit()
     await db.refresh(product)

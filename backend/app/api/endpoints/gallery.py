@@ -10,15 +10,15 @@ router = APIRouter(prefix="/gallery", tags=["Media Gallery"])
 
 @router.get("/", response_model=List[MediaGalleryOut])
 async def list_gallery_items(
-    include_profiles: bool = False,
+    include_profiles: bool = True,
     media_type: Optional[str] = None,
     db: AsyncSession = Depends(get_db)
 ):
-    """Retrieve media gallery items with filtering (e.g. omit user profiles for product selection)"""
+    """Retrieve media gallery items with filtering. By default includes all images (products, descriptions, user avatars)."""
     query = select(MediaGallery).order_by(MediaGallery.id.desc())
     if not include_profiles:
         query = query.where(MediaGallery.media_type != "user_profile")
-    if media_type:
+    if media_type and media_type != "all":
         query = query.where(MediaGallery.media_type == media_type)
         
     result = await db.execute(query)

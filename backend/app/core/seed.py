@@ -111,8 +111,8 @@ async def seed_initial_products(db: AsyncSession):
         await db.commit()
 
     # 2. Seed / Update Master Admin dynamically from .env with Bcrypt Hash (Never plain text in DB)
-    admin_uname = (settings.ADMIN_USERNAME or "Reno@1#1@Admin").strip()
-    admin_pw = (settings.ADMIN_PASSWORD or "Reno#/adminHarsh1@2").strip()
+    admin_uname = (settings.ADMIN_USERNAME or "admin").strip()
+    admin_pw = (settings.ADMIN_PASSWORD or "admin123").strip()
 
     admin_result = await db.execute(select(User).where((User.username == admin_uname) | (User.email == "admin@renoart.in")))
     existing_admin = admin_result.scalars().first()

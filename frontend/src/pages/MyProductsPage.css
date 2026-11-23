@@ -1,0 +1,300 @@
+/* ==========================================================================
+   My Products Page - Studio Digital Vault (Luxury Minimalist)
+   ========================================================================== */
+
+.reno-myproducts-page-wrapper {
+  min-height: 100vh;
+  background-color: #FAF9F6;
+  font-family: inherit;
+  color: #0A0A0C;
+}
+
+/* Header */
+.reno-myproducts-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 1.25rem;
+  background-color: #FAF9F6;
+  border-bottom: 1px solid rgba(10, 10, 12, 0.08);
+}
+
+.reno-myproducts-back-btn {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 9999px;
+  background-color: #FFFFFF;
+  border: 1px solid rgba(10, 10, 12, 0.12);
+  color: #0A0A0C;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 4px rgba(10, 10, 12, 0.04);
+}
+
+.reno-myproducts-back-btn:hover {
+  background-color: #0A0A0C;
+  color: #FFFFFF;
+  border-color: #0A0A0C;
+}
+
+.reno-myproducts-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  text-decoration: none;
+}
+
+.reno-myproducts-hand {
+  height: 22px;
+  width: auto;
+}
+
+.reno-myproducts-logo-text {
+  height: 12px;
+  width: auto;
+}
+
+/* Main Container */
+.reno-myproducts-container {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 4rem;
+}
+
+
+  /* Empty State */
+  .reno-myproducts-empty {
+    text-align: center;
+    padding: 3.5rem 1.5rem;
+    background-color: #FFFFFF;
+    border: 1px solid rgba(10, 10, 12, 0.08);
+    border-radius: 1.25rem;
+    box-shadow: 0 2px 12px rgba(10, 10, 12, 0.03);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+
+  .reno-myproducts-empty-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background-color: #FAF9F6;
+    border: 1px solid rgba(10, 10, 12, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+  }
+
+
+    .reno-myproducts-empty h2 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #0A0A0C;
+      margin: 0 0 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .reno-myproducts-empty p {
+      font-size: 0.8125rem;
+      color: #6B6861;
+      max-width: 420px;
+      line-height: 1.5;
+      margin: 0 0 1.5rem;
+    }
+
+      .reno-myproducts-browse-btn {
+        all: unset;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 1.5rem;
+        background-color: #0A0A0C;
+        color: #FFFFFF;
+        border-radius: 9999px;
+        font-size: 0.8125rem;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(10, 10, 12, 0.15);
+        transition: all 0.2s ease;
+      }
+
+
+      .reno-myproducts-browse-btn:hover {
+        background-color: #222226;
+        transform: translateY(-1px);
+      }
+
+
+      /* Minimalist List */
+      .reno-myproducts-minimal-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+
+      .reno-myproducts-minimal-card {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 0.85rem 1rem;
+        background-color: #FFFFFF;
+        border: 1px solid rgba(10, 10, 12, 0.08);
+        border-radius: 1rem;
+        box-shadow: 0 2px 8px rgba(10, 10, 12, 0.02);
+        transition: all 0.18s ease;
+      }
+
+      .reno-myproducts-minimal-card:hover {
+        border-color: rgba(10, 10, 12, 0.16);
+        box-shadow: 0 4px 14px rgba(10, 10, 12, 0.06);
+      }
+
+      .reno-myproducts-minimal-thumb {
+        width: 50px;
+        height: 50px;
+        border-radius: 0.625rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        flex-shrink: 0;
+        background-color: #18181B;
+      }
+
+      .reno-myproducts-thumb-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+
+      .reno-myproducts-thumb-fmt {
+        font-size: 0.6875rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        color: #FFFFFF;
+      }
+
+
+        .reno-myproducts-minimal-info {
+          flex: 1;
+          min-width: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 0.15rem;
+        }
+
+        .reno-myproducts-minimal-tagrow {
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
+        }
+
+          .reno-myproducts-min-cat {
+            font-size: 0.625rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #0095F6;
+            background-color: rgba(0, 149, 246, 0.1);
+            padding: 0.15rem 0.5rem;
+            border-radius: 999px;
+            line-height: 1.2;
+          }
+
+            .reno-myproducts-min-status {
+              font-size: 0.5625rem;
+              font-weight: 800;
+              color: #15803D;
+              background-color: #DCFCE7;
+              padding: 1px 6px;
+              border-radius: 999px;
+              line-height: 1.2;
+            }
+
+            .reno-myproducts-min-title {
+              margin: 0;
+              font-size: 0.9375rem;
+              font-weight: 800;
+              color: #0A0A0C;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+
+
+            .reno-myproducts-min-license {
+              font-size: 0.6875rem;
+              color: #71717A;
+              font-family: monospace;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+
+
+              .reno-myproducts-minimal-btn-col {
+                display: flex;
+                flex-direction: column;
+                gap: 0.35rem;
+                flex-shrink: 0;
+              }
+
+
+              .reno-myproducts-min-dl-btn {
+                all: unset;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.35rem;
+                padding: 0.45rem 0.85rem;
+                background-color: #0A0A0C;
+                color: #FFFFFF;
+                border-radius: 999px;
+                font-size: 0.75rem;
+                font-weight: 700;
+                cursor: pointer;
+                white-space: nowrap;
+                transition: all 0.18s ease;
+              }
+
+                .reno-myproducts-min-dl-btn:hover {
+                  background-color: #222226;
+                  transform: translateY(-1px);
+                }
+
+                .reno-myproducts-min-doc-btn {
+                  all: unset;
+                  display: inline-flex;
+                  align-items: center;
+                  justify-content: center;
+                  gap: 0.3rem;
+                  padding: 0.3rem 0.65rem;
+                  background-color: #FAF9F6;
+                  border: 1px solid rgba(10, 10, 12, 0.08);
+                  color: #6B6861;
+                  border-radius: 999px;
+                  font-size: 0.6875rem;
+                  font-weight: 600;
+                  cursor: pointer;
+                  white-space: nowrap;
+                  transition: all 0.18s ease;
+                }
+
+                .reno-myproducts-min-doc-btn:hover {
+                  background-color: #FFFFFF;
+                  color: #0A0A0C;
+                  border-color: #0A0A0C;
+                }

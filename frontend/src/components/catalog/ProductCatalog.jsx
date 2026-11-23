@@ -268,13 +268,11 @@ export function ProductCatalog({
         </div>
       </div>
 
-      {/* Loading Progress Bar - Real Elegant Line (Zero Emoji) */}
+      {/* Loading Progress - Round Spinner */}
       {isLoading ? (
         <div className="reno-catalog-loader-container">
-          <div className="reno-catalog-linear-track">
-            <div className="reno-catalog-linear-bar" />
-          </div>
-          <span className="reno-catalog-loader-text">Synchronizing Architectural Catalog...</span>
+          <div className="reno-catalog-round-spinner" />
+          <span className="reno-catalog-loader-text">Loading 3D Models...</span>
         </div>
       ) : (
         <>
@@ -359,42 +357,44 @@ export function ProductCatalog({
                           )}
                         </div>
 
-                        {purchasedProductIds.includes(prod.id) ? (
-                          <div style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '0.35rem',
-                            background: '#F0FDF4',
-                            border: '1px solid #86EFAC',
-                            color: '#15803D',
-                            padding: '0.4rem 0.75rem',
-                            borderRadius: '8px',
-                            fontSize: '0.78rem',
-                            fontWeight: 700
-                          }}>
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                              <polyline points="20 6 9 17 4 12" />
-                            </svg>
-                            <span>Already Bought</span>
-                          </div>
-                        ) : (
-                          <button
-                            type="button"
-                            className={`reno-buy-btn ${isAdded ? 'added' : ''}`}
-                            onClick={(e) => handleBuy(prod, e)}
-                          >
-                            {isAdded ? (
-                              <>
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                  <polyline points="20 6 9 17 4 12" />
-                                </svg>
-                                <span>Added</span>
-                              </>
-                            ) : (
-                              'Buy Now'
-                            )}
-                          </button>
-                        )}
+                        {
+                          purchasedProductIds.map(String).includes(String(prod.id)) ? (
+                            <div style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.35rem',
+                              background: '#F0FDF4',
+                              border: '1px solid #86EFAC',
+                              color: '#15803D',
+                              padding: '0.4rem 0.75rem',
+                              borderRadius: '8px',
+                              fontSize: '0.78rem',
+                              fontWeight: 700
+                            }}>
+                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="20 6 9 17 4 12" />
+                              </svg>
+                              <span>Already Bought</span>
+                            </div>
+                          ) : (
+                            <button
+                              type="button"
+                              className={`reno-buy-btn ${isAdded ? 'added' : ''}`}
+                              onClick={(e) => handleBuy(prod, e)}
+                            >
+                              {isAdded ? (
+                                <>
+                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="20 6 9 17 4 12" />
+                                  </svg>
+                                  <span>Added</span>
+                                </>
+                              ) : (
+                                'Buy Now'
+                              )}
+                            </button>
+                          )
+                        }
                       </div>
                     </div>
                   </article>

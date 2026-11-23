@@ -11,6 +11,7 @@ import CustomersTab from './components/customers/CustomersTab';
 import CustomerDetailView from './components/customer-detail/CustomerDetailView';
 import SiteContentTab from './components/site-content/SiteContentTab';
 import FooterContentTab from './components/site-content/FooterContentTab';
+import SubscriptionsTab from './components/subscriptions/SubscriptionsTab';
 import GalleryTab from './components/gallery/GalleryTab';
 import SettingsTab from './components/settings/SettingsTab';
 import { API_BASE_URL, getWebSocketUrl } from './services/api';
@@ -34,15 +35,46 @@ export default function App() {
       return 'dashboard';
     }
   });
-  const [selectedCustomer, setSelectedCustomer] = useState(null);
+
+  const [selectedCustomerId, setSelectedCustomerId] = useState(() => {
+    try {
+      const stored = localStorage.getItem('reno_crm_selected_customer_id');
+      return stored ? parseInt(stored, 10) : null;
+    } catch {
+      return null;
+    }
+  });
+
   const [isProductEditorOpen, setIsProductEditorOpen] = useState(false);
   const [syncSuccess, setSyncSuccess] = useState(false);
+
+  // Sync tab and customer persistence across page reloads
+  useEffect(() => {
+    try {
+      localStorage.setItem('reno_crm_active_tab', activeTab);
+      window.location.hash = activeTab;
+    } catch (e) { }
+  }, [activeTab]);
+
+  useEffect(() => {
+    try {
+      if (selectedCustomerId) {
+        localStorage.setItem('reno_crm_selected_customer_id', String(selectedCustomerId));
+      } else {
+        localStorage.removeItem('reno_crm_selected_customer_id');
+      }
+    } catch (e) { }
+  }, [selectedCustomerId]);
 
   // Core Data States
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
   const [customers, setCustomers] = useState([]);
+  const [subscriptionTiers, setSubscriptionTiers] = useState([]);
+  const [isSavingSubscriptions, setIsSavingSubscriptions] = useState(false);
+  const [subscriptionSaveSuccess, setSubscriptionSaveSuccess] = useState(false);
+  const [isLoadingData, setIsLoadingData] = useState(true);
 
   // Category creation form
   const [newCatName, setNewCatName] = useState('');
@@ -81,22 +113,48 @@ export default function App() {
   // Fetch PostgreSQL live data
   const loadPostgreSqlData = async () => {
     try {
-      const [catsRes, prodsRes, ordersRes, custsRes] = await Promise.all([
+      setIsLoadingData(true);
+      const [catsRes, prodsRes, ordersRes, custsRes, subsRes] = await Promise.all([
         fetch(`${API_BASE_URL}/categories/`),
         fetch(`${API_BASE_URL}/products/`),
         fetch(`${API_BASE_URL}/orders/`),
-        fetch(`${API_BASE_URL}/customers/`)
+        fetch(`${API_BASE_URL}/customers/`),
+        fetch(`${API_BASE_URL}/subscriptions/`)
       ]);
 
       if (catsRes.ok) setCategories(await catsRes.json());
       if (prodsRes.ok) setProducts(await prodsRes.json());
       if (ordersRes.ok) setOrders(await ordersRes.json());
       if (custsRes.ok) setCustomers(await custsRes.json());
+      if (subsRes.ok) setSubscriptionTiers(await subsRes.json());
 
       setSyncSuccess(true);
       setTimeout(() => setSyncSuccess(false), 2500);
     } catch (err) {
       console.error('Failed fetching data from PostgreSQL:', err);
+    } finally {
+      setIsLoadingData(false);
+    }
+  };
+
+  const handleSaveSubscriptionTiers = async (updatedTiers) => {
+    try {
+      setIsSavingSubscriptions(true);
+      const res = await fetch(`${API_BASE_URL}/subscriptions/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tiers: updatedTiers })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSubscriptionTiers(data.tiers || updatedTiers);
+        setSubscriptionSaveSuccess(true);
+        setTimeout(() => setSubscriptionSaveSuccess(false), 3000);
+      }
+    } catch (err) {
+      console.error('Failed saving subscription tiers:', err);
+    } finally {
+      setIsSavingSubscriptions(false);
     }
   };
 
@@ -313,20 +371,16 @@ export default function App() {
     return <Login onLoginSuccess={handleLoginSuccess} />;
   }
 
+  const currentCustomer = customers.find(c => c.id === selectedCustomerId) || (selectedCustomerId ? { id: selectedCustomerId } : null);
+
   return (
     <div className="crm-container">
       <Sidebar
         activeTab={activeTab}
         setActiveTab={(tab) => {
-          setSelectedCustomer(null);
+          setSelectedCustomerId(null);
           setIsProductEditorOpen(false);
           setActiveTab(tab);
-          try {
-            localStorage.setItem('reno_crm_active_tab', tab);
-            window.location.hash = tab;
-          } catch (e) {
-            // quiet
-          }
         }}
         categoriesCount={categories.length}
         productsCount={products.length}
@@ -334,15 +388,15 @@ export default function App() {
         customersCount={customers.length}
         adminUser={adminUser}
         onLogout={handleLogout}
-        onSelectCustomerTab={() => setSelectedCustomer(null)}
+        onSelectCustomerTab={() => setSelectedCustomerId(null)}
       />
 
       <main className="crm-main">
         <header className="crm-header">
           <div>
             <h1 className="crm-title">
-              {activeTab === 'customers' && selectedCustomer
-                ? `Customer / ${selectedCustomer.name || selectedCustomer.email}`
+              {activeTab === 'customers' && currentCustomer
+                ? `Customer / ${currentCustomer.name || currentCustomer.email || `#${currentCustomer.id}`}`
                 : activeTab === 'products' && isProductEditorOpen
                   ? editingProductId ? 'Edit Product' : 'New Product'
                   : activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
@@ -396,6 +450,7 @@ export default function App() {
             <ProductsTab
               products={products}
               categories={categories}
+              isLoading={isLoadingData}
               onOpenCreateProduct={handleOpenCreateProduct}
               onStartEdit={handleStartEditProduct}
               onRemoveProduct={handleRemoveProduct}
@@ -407,15 +462,16 @@ export default function App() {
         {activeTab === 'orders' && <OrdersTab orders={orders} />}
 
         {activeTab === 'customers' && (
-          selectedCustomer ? (
+          currentCustomer ? (
             <CustomerDetailView
-              customer={selectedCustomer}
-              onBack={() => setSelectedCustomer(null)}
+              customer={currentCustomer}
+              onBack={() => setSelectedCustomerId(null)}
+              onCustomerUpdated={loadPostgreSqlData}
             />
           ) : (
             <CustomersTab
               customers={customers}
-              onSelectCustomer={(cust) => setSelectedCustomer(cust)}
+              onSelectCustomer={(cust) => setSelectedCustomerId(cust.id)}
             />
           )
         )}
@@ -423,6 +479,15 @@ export default function App() {
         {activeTab === 'site-content' && <SiteContentTab />}
 
         {activeTab === 'footer-content' && <FooterContentTab />}
+
+        {activeTab === 'subscriptions' && (
+          <SubscriptionsTab
+            tiers={subscriptionTiers}
+            onSaveTiers={handleSaveSubscriptionTiers}
+            isSaving={isSavingSubscriptions}
+            saveSuccess={subscriptionSaveSuccess}
+          />
+        )}
 
         {activeTab === 'gallery' && <GalleryTab />}
 

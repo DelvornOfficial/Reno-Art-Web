@@ -23,6 +23,9 @@ class UserLogin(BaseModel):
 class UserOut(UserBase):
     id: int
     plan: str
+    subscription_tier_id: Optional[str] = None
+    subscription_expires_at: Optional[datetime] = None
+    subscription_started_at: Optional[datetime] = None
     role: str
     is_active: bool
     created_at: datetime
@@ -239,6 +242,9 @@ class CustomerDetailedAnalytics(BaseModel):
     email: str
     username: Optional[str] = None
     plan: str
+    subscription_tier_id: Optional[str] = None
+    subscription_expires_at: Optional[datetime] = None
+    subscription_started_at: Optional[datetime] = None
     role: str
     created_at: datetime
     last_active: Optional[datetime] = None
@@ -293,12 +299,18 @@ class PurchasedProductOut(BaseModel):
     format: Optional[str] = "OBJ / STL / DWG"
     category: Optional[str] = "Architectural CAD"
     license_key: str
+    file_download_url: Optional[str] = None
     download_url: Optional[str] = None
     pdf_document_url: Optional[str] = None
     document_name: Optional[str] = None
     image_url: Optional[str] = None
     gradient: Optional[str] = None
     purchased_at: datetime
+    price_paid: Optional[float] = None
+    order_number: Optional[str] = None
+    invoice_number: Optional[str] = None
+    payment_method: Optional[str] = "Razorpay / UPI"
+    description: Optional[str] = None
 
     class Config:
         from_attributes = True

@@ -16,9 +16,17 @@ backend/__pycache__/
 backend/app/__pycache__/
 backend/app/*/__pycache__/
 backend/app/*/*/__pycache__/
+# Environment Variables & Secrets
+.env
+.env.*
+!.env.example
 .env.local
+backend/.env
+frontend/.env
+admin-panel/.env
 
-# Temp zip files
+# Temp zip and tar files
 *.zip
+*.tar.gz
 deploy-package/
 temp_*.txt

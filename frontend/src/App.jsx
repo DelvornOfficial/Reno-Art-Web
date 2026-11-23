@@ -5,11 +5,13 @@ import ProductCatalog from './components/catalog/ProductCatalog';
 import CurrencySwitcher from './components/currency/CurrencySwitcher';
 import Footer from './components/footer/Footer';
 import { fetchProductById, pingUserActivity, fetchUserPurchases } from './services/api';
+import { useToast } from './context/ToastContext';
 
 // On-Demand Lazy Loaded Pages (Downloaded ONLY when visitor actually visits the page)
 const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage'));
 const BillingPage = lazy(() => import('./pages/BillingPage'));
 const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const MyProductsPage = lazy(() => import('./pages/MyProductsPage'));
 const SignupPage = lazy(() => import('./pages/SignupPage'));
 const LegalPage = lazy(() => import('./pages/LegalPage'));
 
@@ -45,12 +47,14 @@ function PageLoadingFallback() {
 }
 
 export function App() {
+  const { showToast } = useToast();
   const [currentRoute, setCurrentRoute] = useState(() => {
     const path = window.location.pathname;
     const hash = window.location.hash;
     if (path === '/signup' || hash === '#signup') return 'signup';
     if (path === '/billing' || hash === '#billing') return 'billing';
     if (path === '/profile' || hash === '#profile') return 'profile';
+    if (path === '/my-products' || hash === '#my-products') return 'my-products';
     if (path === '/terms' || hash === '#terms') return 'terms';
     if (path === '/privacy' || hash === '#privacy') return 'privacy';
     if (path === '/refund' || hash === '#refund') return 'refund';
@@ -100,7 +104,20 @@ export function App() {
     });
   };
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [activeProfileTab, setActiveProfileTab] = useState('my-product');
+  const [activeProfileTab, setActiveProfileTab] = useState(() => {
+    const hash = window.location.hash.replace('#', '');
+    if (hash) return hash;
+    return localStorage.getItem('reno_active_profile_tab') || 'subscription';
+  });
+
+  const handleSelectProfileTab = (tabId) => {
+    setActiveProfileTab(tabId);
+    try {
+      localStorage.setItem('reno_active_profile_tab', tabId);
+      window.history.replaceState({ route: 'profile', tab: tabId }, '', `/profile#${tabId}`);
+    } catch { }
+  };
+  const [isLoadingPurchases, setIsLoadingPurchases] = useState(false);
   const [purchasedProducts, setPurchasedProducts] = useState(() => {
     try {
       const stored = localStorage.getItem('reno_purchased_products');
@@ -112,15 +129,21 @@ export function App() {
 
   // Cross-device Cloud Sync: Fetch real purchased products from database for logged in user
   useEffect(() => {
-    if (user && user.id) {
-      fetchUserPurchases(user.id).then((serverPurchases) => {
-        if (serverPurchases && Array.isArray(serverPurchases)) {
-          setPurchasedProducts(serverPurchases);
-          localStorage.setItem('reno_purchased_products', JSON.stringify(serverPurchases));
-        }
-      });
+    if (user) {
+      const userIdOrEmail = user.id || user.email || user.identifier;
+      setIsLoadingPurchases(true);
+      fetchUserPurchases(userIdOrEmail)
+        .then((serverPurchases) => {
+          if (serverPurchases && Array.isArray(serverPurchases)) {
+            setPurchasedProducts(serverPurchases);
+            localStorage.setItem('reno_purchased_products', JSON.stringify(serverPurchases));
+          }
+        })
+        .finally(() => {
+          setIsLoadingPurchases(false);
+        });
     }
-  }, [user?.id]);
+  }, [user?.id, user?.email, user?.identifier]);
 
   const handleLoginSuccess = (userData) => {
     const userPayload = userData || { identifier: 'architect@studio.design' };
@@ -140,6 +163,13 @@ export function App() {
   const handleAddToCart = (product) => {
     if (!isLoggedIn) {
       setIsLoginOpen(true);
+      return;
+    }
+    const isPurchased = (purchasedProducts || []).some(
+      (p) => String(p.id) === String(product.id) || String(p.product_id) === String(product.id)
+    );
+    if (isPurchased) {
+      showToast("You have already purchased this product. You can access it in My Products.", "info");
       return;
     }
     updateCartItems((prev) => {
@@ -213,6 +243,13 @@ export function App() {
       setIsLoginOpen(true);
       return;
     }
+    const isPurchased = (purchasedProducts || []).some(
+      (p) => String(p.id) === String(product.id) || String(p.product_id) === String(product.id)
+    );
+    if (isPurchased) {
+      showToast("You have already purchased this product. You can access it in My Products.", "info");
+      return;
+    }
     updateCartItems((prev) => {
       if (prev.some((item) => item.id === product.id)) return prev;
       return [...prev, product];
@@ -237,10 +274,16 @@ export function App() {
     setCheckoutItems(null);
   };
 
-  const navigateToProfileTab = (tabId = 'my-product') => {
+  const navigateToProfileTab = (tabId = 'profile-setting') => {
+    if (tabId === 'my-product') {
+      setCurrentRoute('my-products');
+      window.history.pushState({ route: 'my-products' }, '', '/my-products');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
     setActiveProfileTab(tabId);
     setCurrentRoute('profile');
-    window.history.pushState({ route: 'profile' }, '', '/profile');
+    window.history.pushState({ route: 'profile', tab: tabId }, '', `/profile#${tabId}`);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -251,6 +294,7 @@ export function App() {
       if (path === '/signup' || hash === '#signup') setCurrentRoute('signup');
       else if (path === '/billing' || hash === '#billing') setCurrentRoute('billing');
       else if (path === '/profile' || hash === '#profile') setCurrentRoute('profile');
+      else if (path === '/my-products' || hash === '#my-products') setCurrentRoute('my-products');
       else if (path === '/terms' || hash === '#terms') setCurrentRoute('terms');
       else if (path === '/privacy' || hash === '#privacy') setCurrentRoute('privacy');
       else if (path === '/refund' || hash === '#refund') setCurrentRoute('refund');
@@ -400,6 +444,9 @@ export function App() {
           onAddToCart={handleAddToCart}
           onBuyNow={handleBuyNow}
           cartProductIds={cartItems.map((item) => item.id)}
+          isPurchased={(purchasedProducts || []).some(
+            (p) => String(p.id) === String(product?.id) || String(p.product_id) === String(product?.id)
+          )}
         />
         <CartDrawer
           isOpen={isCartOpen}
@@ -485,7 +532,7 @@ export function App() {
           />
         </Suspense>
         <CurrencySwitcher />
-      </div>
+      </div >
     );
   }
 
@@ -504,6 +551,23 @@ export function App() {
             onSelectCheckoutItem={(item) => setCheckoutItems(item ? [item] : null)}
           />
         </Suspense>
+      </div >
+    );
+  }
+
+  // If on dedicated my purchased products page
+  if (currentRoute === 'my-products') {
+    return (
+      <div className="app-container">
+        <Suspense fallback={<PageLoadingFallback />}>
+          <MyProductsPage
+            user={user}
+            purchasedProducts={purchasedProducts}
+            isLoading={isLoadingPurchases}
+            onNavigateToHome={navigateToHome}
+            onOpenProduct={(prod) => navigateToProduct(prod.id)}
+          />
+        </Suspense>
       </div>
     );
   }
@@ -520,7 +584,7 @@ export function App() {
             onTogglePlan={handleTogglePlan}
             purchasedProducts={purchasedProducts}
             activeSidebarItem={activeProfileTab}
-            onSelectSidebarItem={(tabId) => setActiveProfileTab(tabId)}
+            onSelectSidebarItem={handleSelectProfileTab}
           />
         </Suspense>
       </div>
@@ -560,7 +624,10 @@ export function App() {
           onQuickView={navigateToProduct}
           onAddToCart={handleAddToCart}
           cartProductIds={cartItems.map((item) => item.id)}
-          purchasedProductIds={(purchasedProducts || []).map((p) => p.id || p.product_id)}
+          purchasedProductIds={(purchasedProducts || []).flatMap((p) => [
+            p.id ? String(p.id) : null,
+            p.product_id ? String(p.product_id) : null
+          ]).filter(Boolean)}
         />
       </main>
 
@@ -603,7 +670,7 @@ export function App() {
 
       {/* Floating Currency Selector */}
       <CurrencySwitcher />
-    </div>
+    </div >
   );
 }
 

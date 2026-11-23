@@ -29,6 +29,9 @@ class User(Base):
     hashed_password = Column(String(255), nullable=False)
     role = Column(Enum(UserRole), default=UserRole.USER, nullable=False)
     plan = Column(Enum(MembershipPlan), default=MembershipPlan.NORMAL, nullable=False)
+    subscription_tier_id = Column(String(50), nullable=True) # tier_1, tier_2, tier_3
+    subscription_expires_at = Column(DateTime, nullable=True) # Expiry datetime
+    subscription_started_at = Column(DateTime, nullable=True)
     profile_image = Column(Text, default="", nullable=True)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)

@@ -1,0 +1,299 @@
+/* ==========================================================================
+   Mobile Navigation Drawer (Sidebar) - Isolated Stylesheet
+   ========================================================================== */
+
+/* Slide-out Navigation Drawer Backdrop */
+.reno-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(10, 10, 12, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1100;
+  animation: fadeIn 0.22s ease-out forwards;
+}
+
+.reno-drawer-backdrop.closing {
+  animation: fadeOut 0.22s ease-in forwards;
+}
+
+.reno-mobile-drawer {
+  position: fixed;
+  top: 0;
+  inset-inline-start: 0;
+  block-size: 100dvh;
+  inline-size: min(84dvw, 21rem);
+  background-color: #FAF9F6;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 8px 0 32px rgba(10, 10, 12, 0.16);
+  animation: slideDrawer 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.reno-mobile-drawer.closing {
+  animation: slideDrawerOut 0.22s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+@keyframes slideDrawer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideDrawerOut {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.reno-drawer-header {
+  padding: 1.125rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(10, 10, 12, 0.08);
+  background-color: #FFFFFF;
+}
+
+.reno-drawer-close {
+  all: unset;
+  box-sizing: border-box;
+  inline-size: 34px;
+  block-size: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(10, 10, 12, 0.1);
+  background: #FAF9F6;
+  color: #0A0A0C;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.reno-drawer-close:hover {
+  background-color: #0A0A0C;
+  color: #FFFFFF;
+}
+
+/* User Profile Card inside Drawer */
+.reno-drawer-user-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  margin: 0.75rem 0.875rem 0.25rem;
+  background-color: #FFFFFF;
+  border: 1px solid rgba(10, 10, 12, 0.08);
+  border-radius: 0.85rem;
+  box-shadow: 0 2px 8px rgba(10, 10, 12, 0.02);
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.reno-drawer-user-card:hover {
+  background-color: #F4F3EE;
+  border-color: rgba(10, 10, 12, 0.14);
+}
+
+.reno-drawer-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #18181B 0%, #0A0A0C 100%);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.reno-drawer-user-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.reno-drawer-user-name {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #0A0A0C;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.reno-drawer-user-email {
+  font-size: 0.6875rem;
+  color: #8E8A80;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.reno-drawer-menu {
+  list-style: none;
+  padding: 0.875rem 0.875rem 1.25rem;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.reno-drawer-link {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  inline-size: 100%;
+  box-sizing: border-box;
+  padding: 0.75rem 0.85rem;
+  color: #0A0A0C;
+  text-decoration: none;
+  border-radius: 0.75rem;
+  transition: all 0.18s ease;
+  background: #FFFFFF;
+  border: 1px solid rgba(10, 10, 12, 0.06);
+  cursor: pointer;
+  text-align: left;
+}
+
+.reno-drawer-link:hover,
+.reno-drawer-link:active {
+  background-color: #0A0A0C;
+  color: #FFFFFF;
+  border-color: #0A0A0C;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(10, 10, 12, 0.12);
+}
+
+.reno-drawer-item-icon-box {
+  width: 34px;
+  height: 34px;
+  border-radius: 0.5rem;
+  background-color: #FAF9F6;
+  border: 1px solid rgba(10, 10, 12, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0A0A0C;
+  flex-shrink: 0;
+  transition: all 0.18s ease;
+}
+
+.reno-drawer-link:hover .reno-drawer-item-icon-box {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+}
+
+.reno-drawer-item-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.reno-drawer-item-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.reno-drawer-item-label {
+  font-size: 0.84375rem;
+  font-weight: 700;
+  color: inherit;
+}
+
+.reno-drawer-item-badge {
+  font-size: 0.5625rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background-color: #0095F6;
+  color: #FFFFFF;
+}
+
+.reno-drawer-item-desc {
+  font-size: 0.6875rem;
+  color: #8E8A80;
+  transition: color 0.18s ease;
+}
+
+.reno-drawer-link:hover .reno-drawer-item-desc {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.reno-drawer-item-arrow {
+  color: #A1A1AA;
+  flex-shrink: 0;
+  transition: transform 0.18s ease, color 0.18s ease;
+}
+
+.reno-drawer-link:hover .reno-drawer-item-arrow {
+  color: #FFFFFF;
+  transform: translateX(2px);
+}
+
+.reno-drawer-footer {
+  padding: 1.25rem;
+  border-top: 1px solid rgba(10, 10, 12, 0.08);
+  background-color: #FFFFFF;
+}
+
+.reno-drawer-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 100%;
+  padding-block: 0.875rem;
+  background: #0A0A0C;
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 9999px;
+  text-decoration: none;
+  box-shadow: 0 4px 16px rgba(10, 10, 12, 0.2);
+  transition: all 0.2s ease;
+}
+
+.reno-drawer-cta:hover {
+  background: #1F1F24;
+  transform: translateY(-1px);
+}
